@@ -1,70 +1,60 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
 import { authService } from "../services/auth-Service";
-import { cn } from "../services/utils";
 import { GetGoogleAccess } from "../services/google";
 import { useMutation } from "@tanstack/react-query";
 
 export default function Login() {
-
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const mutation = useMutation({
-    mutationFn: async (googleToken: string) => {
-      return await authService.loginWithGoogle(googleToken);
-    },
+    mutationFn: async (googleToken: string) =>
+      await authService.loginWithGoogle(googleToken),
 
     onSuccess: (data) => {
       login(data.accessToken);
-      alert("Login Successfully");
       navigate("/dashboard");
-    },
-
-    onError: (error: any) => {
-      alert(
-        error?.message ||
-        error?.response?.data?.message ||
-        "Login failed"
-      );
     },
   });
 
   const handleLogin = async () => {
     try {
-      const googleToken = await GetGoogleAccess();
-      mutation.mutate(googleToken);
-    } catch (err: any) {
-      alert(err?.message || "Google Login Failed");
+      const token = await GetGoogleAccess();
+      mutation.mutate(token);
+    } catch (e: any) {
+      alert(e.message);
     }
   };
 
 
-  if (import.meta.env.VITE_MODE === "development") {
-    return (
-      <div>
-        Login Page 
-        <button onClick={() => navigate("/dev-login")}>Login</button>
-      </div>
-    );
-  }
-
   return (
-    <div className="m-auto flex min-h-screen w-screen items-center justify-center p-6">
-      <div className="flex w-full max-w-md flex-col items-center justify-center rounded-xl border border-neutral-300 bg-white p-8 text-center shadow">
-        <h1 className="mb-4 text-2xl font-bold">Welcome Admin</h1>
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-orange-100 to-white px-4">
+      
+      <div className="bg-white shadow-xl rounded-2xl p-6 w-full max-w-sm text-center">
+        
+        <h1 className="text-2xl font-bold mb-2 text-gray-800">
+          Welcome 🙏
+        </h1>
+
+        <p className="text-gray-500 mb-6 text-sm">
+          Continue your spiritual journey
+        </p>
 
         <button
-          className={cn(
-            "w-3xs mx-auto",
-            mutation.isPending
-              ? "cursor-not-allowed"
-              : "cursor-pointer"
-          )}
           onClick={handleLogin}
-          disabled={mutation.isPending}
+          className="flex items-center justify-center gap-3 w-full border border-gray-300 rounded-lg py-3 hover:bg-gray-50 transition cursor-pointer"
         >
-          {mutation.isPending ? "Logging in..." : "Continue with Google"}
+          {/* Google Icon */}
+          <img
+            src="https://www.svgrepo.com/show/475656/google-color.svg"
+            alt="google"
+            className="w-5 h-5"
+          />
+
+          <span className="text-sm font-medium text-gray-700">
+            Continue with Google
+          </span>
         </button>
 
       </div>

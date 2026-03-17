@@ -4,61 +4,45 @@ import {
   useMemo,
   useState,
   useContext,
-  type ReactNode,
 } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../services/auth-Service";
 
-type AuthContextValue = {
-  isAuthenticated: boolean;
-  login: (accessToken: string, refreshToken?: string) => void;
-  logout: () => void;
-};
+const AuthContext = createContext<any>(undefined);
 
-type AuthProvidersProps = {
-  children: ReactNode;
-};
-
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
-
-export const AuthProvider = ({ children }: AuthProvidersProps) => {
+export const AuthProvider = ({ children }: any) => {
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
-    () => !!authService.getAccessToken(),
+
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!authService.getAccessToken()
   );
 
   useEffect(() => {
-    const unsubscribe = authService.onLogout(() => {
+    const unSub = authService.onLogout(() => {
       setIsAuthenticated(false);
       navigate("/login");
     });
-    return unsubscribe;
+
+    return unSub;
   }, [navigate]);
-  
+
   const value = useMemo(
     () => ({
       isAuthenticated,
-      login: (accessToken: string, refreshToken?: string) => {
+
+      login: (accessToken: string) => {
         authService.setAccessToken(accessToken);
-
-        if (refreshToken) {
-          authService.setRefreshToken(refreshToken);
-        }
-
         setIsAuthenticated(true);
       },
+
+      logout: () => {
+        authService.triggerLogout();
+      },
     }),
-    [isAuthenticated],
+    [isAuthenticated]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
-  return ctx;
-};
-
-
-
+export const useAuth = () => useContext(AuthContext);

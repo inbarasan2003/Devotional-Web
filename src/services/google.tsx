@@ -1,19 +1,17 @@
 export function GetGoogleAccess(): Promise<string> {
   return new Promise((resolve, reject) => {
-
     if (!(window as any).google) {
-      reject(new Error("Google Identity Services not loaded"));
+      reject("Google not loaded");
       return;
     }
 
     const client = (window as any).google.accounts.oauth2.initTokenClient({
-      client_id:
-        "745458751291-a67e777eqc0so95179i8mto5gabk2bjf.apps.googleusercontent.com",
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
       scope: "openid email profile",
 
       callback: (resp: any) => {
-        if (resp?.access_token) resolve(resp.access_token);
-        else reject(new Error("No access token from Google"));
+        if (resp.access_token) resolve(resp.access_token);
+        else reject("No token");
       },
     });
 
