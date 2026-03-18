@@ -6,18 +6,24 @@ import { useMutation } from "@tanstack/react-query";
 
 export default function Login() {
   const navigate = useNavigate();
+  //Getting the login function to handle user authentication.
   const { login } = useAuth();
 
+  //useMutation is used when we want to send data to the server and perform actions like login, signup, or updates.
   const mutation = useMutation({
+    //mutationFn is the function that performs the API request using the given data.
+    //It takes the Google token, sends it to the backend, and returns the response.
     mutationFn: async (googleToken: string) =>
       await authService.loginWithGoogle(googleToken),
 
+    //After a successful API call, it logs in the user and redirects to the mantra page.
     onSuccess: (data) => {
       login(data.accessToken);
-      navigate("/dashboard");
+      navigate("/mantra");
     },
   });
 
+  //Gets the Google token and sends it to the backend, handles errors if any
   const handleLogin = async () => {
     try {
       const token = await GetGoogleAccess();
@@ -45,7 +51,7 @@ export default function Login() {
           onClick={handleLogin}
           className="flex items-center justify-center gap-3 w-full border border-gray-300 rounded-lg py-3 hover:bg-gray-50 transition cursor-pointer"
         >
-          {/* Google Icon */}
+         
           <img
             src="https://www.svgrepo.com/show/475656/google-color.svg"
             alt="google"

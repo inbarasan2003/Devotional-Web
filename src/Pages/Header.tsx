@@ -1,7 +1,12 @@
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../context/AuthProvider";
 
 export default function Header() {
+
+    const { logout } = useAuth();
   return (
+
+
     <header className="flex justify-between items-center px-6 py-6 shadow bg-white">
       
       <h2 className="font-bold text-xl text-orange-500">
@@ -35,6 +40,14 @@ export default function Header() {
         >
             Profile
         </NavLink>
+
+
+         <button
+        onClick={logout}
+        className="bg-red-500 text-white px-3 py-1 rounded"
+      >
+        Logout
+      </button>
       </nav>
     </header>
   );
