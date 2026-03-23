@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getMantras } from "../../services/Mantra-api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getMantras, deleteMantra } from "../../services/Mantra-api";
 
 export default function MantraPage() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  const queryClient = useQueryClient();
 
   const itemsPerPage = 5;
 
@@ -13,9 +15,25 @@ export default function MantraPage() {
     queryFn: getMantras,
   });
 
-  console.log("MANTRAS 👉", data);
+  // 🔥 DELETE HANDLER
+  const handleDelete = async (id: string) => {
+    const confirm = window.confirm("Delete this mantra?");
 
-  // 🔥 FIX: data direct array
+    if (!confirm) return;
+
+    try {
+      await deleteMantra(id);
+
+      // 🔥 refresh list
+      await queryClient.invalidateQueries({ queryKey: ["mantras"] });
+
+      alert("Deleted ✅");
+    } catch (err: any) {
+      console.error(err);
+      alert(err.response?.data?.message || "Delete failed ❌");
+    }
+  };
+
   const filteredMantras = (data ?? []).filter((item: any) =>
     item.title?.toLowerCase().includes(search.toLowerCase())
   );
@@ -75,11 +93,13 @@ export default function MantraPage() {
                     {item.description}
                   </p>
 
-                  {item.tags && (
-                    <p className="text-xs text-gray-400">
-                      Tags: {item.tags}
-                    </p>
-                  )}
+                  {/* 🔥 DELETE BUTTON */}
+                  <button
+                    onClick={() => handleDelete(item._id)}
+                    className="mt-2 bg-red-500 text-white px-3 py-1 rounded"
+                  >
+                    Delete
+                  </button>
                 </div>
               ))
             ) : (
