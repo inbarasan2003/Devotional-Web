@@ -1,24 +1,16 @@
-import {
-  createContext,
-  useEffect,
-  useMemo,
-  useState,
-  useContext,
-} from "react";
+import { createContext, useEffect, useMemo, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../services/auth-Service";
 
-
-//Default value undefined 
+//Default value undefined
 const AuthContext = createContext<any>(undefined);
 
 export const AuthProvider = ({ children }: any) => {
   const navigate = useNavigate();
 
-
   //Checks if the user is already logged in when the app loads
   const [isAuthenticated, setIsAuthenticated] = useState(
-    !!authService.getAccessToken()
+    !!authService.getAccessToken(),
   );
 
   //It listens for logout and redirects the user to the login page when it happens
@@ -31,8 +23,7 @@ export const AuthProvider = ({ children }: any) => {
     return unSub;
   }, [navigate]);
 
-
-  //useMemo caches computed values to avoid unnecessary recalculation  
+  //useMemo caches computed values to avoid unnecessary recalculation
   const value = useMemo(
     () => ({
       isAuthenticated,
@@ -46,9 +37,10 @@ export const AuthProvider = ({ children }: any) => {
       //Removes the token
       logout: () => {
         authService.triggerLogout();
+        window.location.reload();
       },
     }),
-    [isAuthenticated]
+    [isAuthenticated],
   );
 
   //It provides the context value to all children components

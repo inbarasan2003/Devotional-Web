@@ -13,7 +13,13 @@ axiosInstance.interceptors.request.use((config) => {
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  }else {
+    delete config.headers.Authorization; 
   }
 
   return config;
 });
+
+
+
+
