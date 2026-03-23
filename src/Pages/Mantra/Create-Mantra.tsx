@@ -9,8 +9,10 @@ export default function CreateMantra() {
 
   const [form, setForm] = useState({
     title: "",
-    content: "",
+    description: "",
     tags: "",
+    photos: [] as string[],
+    audio: "",
   });
 
   const handleChange = (e: any) => {
@@ -21,20 +23,31 @@ export default function CreateMantra() {
   };
 
   const handleSubmit = async () => {
-    try {
-      await createMantra({
-        title: form.title,
-        content: form.content,
-        tags: form.tags.split(","),
-      });
+    if (!form.title || !form.description) {
+      alert("Fill required fields ❌");
+      return;
+    }
 
-      queryClient.invalidateQueries({ queryKey: ["mantras"] });
+    try {
+      const payload = {
+        title: form.title,
+        description: form.description,
+        tags: form.tags.trim(),
+        photos: form.photos,
+        audio: form.audio,
+      };
+
+      await createMantra(payload);
+
+      // 🔥 refresh list
+      await queryClient.invalidateQueries({ queryKey: ["mantras"] });
 
       alert("Mantra Created ✅");
+
       navigate("/mantra");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert(err);
+      alert(err.response?.data?.message || "Error ❌");
     }
   };
 
@@ -50,8 +63,8 @@ export default function CreateMantra() {
       />
 
       <textarea
-        name="content"
-        placeholder="Content"
+        name="description"
+        placeholder="Description"
         className="border p-2 w-full mb-3"
         onChange={handleChange}
       />
@@ -63,9 +76,27 @@ export default function CreateMantra() {
         onChange={handleChange}
       />
 
+      <input
+        placeholder="Photos URLs (comma separated)"
+        className="border p-2 w-full mb-3"
+        onChange={(e) =>
+          setForm({
+            ...form,
+            photos: e.target.value.split(","),
+          })
+        }
+      />
+
+      <input
+        name="audio"
+        placeholder="Audio URL"
+        className="border p-2 w-full mb-3"
+        onChange={handleChange}
+      />
+
       <button
         onClick={handleSubmit}
-        className="bg-orange-500 text-white px-4 py-2 rounded"
+        className="bg-orange-500 text-white px-4 py-2 rounded w-full"
       >
         Create
       </button>

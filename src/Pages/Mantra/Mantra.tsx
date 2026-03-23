@@ -8,37 +8,43 @@ export default function MantraPage() {
 
   const itemsPerPage = 5;
 
-  const { data, isLoading, isError, error} = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["mantras"],
-    queryFn: () => getMantras(),
+    queryFn: getMantras,
   });
 
+  console.log("MANTRAS 👉", data);
 
-  const filteredMantras = (data?.mantras ?? []).filter((item: any) =>
-    item.title?.toLowerCase().includes(search.toLowerCase()),
+  // 🔥 FIX: data direct array
+  const filteredMantras = (data ?? []).filter((item: any) =>
+    item.title?.toLowerCase().includes(search.toLowerCase())
   );
 
- 
-  const totalPages = Math.ceil(filteredMantras.length / itemsPerPage);
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredMantras.length / itemsPerPage)
+  );
 
   const startIndex = (currentPage - 1) * itemsPerPage;
 
   const paginatedData = filteredMantras.slice(
     startIndex,
-    startIndex + itemsPerPage,
+    startIndex + itemsPerPage
   );
 
- 
   if (isError) {
-    return <div className="text-red-500">{error.message}</div>;
+    return (
+      <div className="text-red-500">
+        {(error as any)?.message || "Error ❌"}
+      </div>
+    );
   }
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Mantras</h1>
-      </div>
+      <h1 className="text-2xl font-bold">Mantras</h1>
 
+      {/* Search */}
       <input
         type="text"
         placeholder="Search mantra..."
@@ -50,22 +56,38 @@ export default function MantraPage() {
         className="mt-4 p-2 border rounded w-full max-w-sm"
       />
 
+      {/* Loading */}
       {isLoading ? (
         <p className="mt-6">Loading...</p>
       ) : (
         <>
+          {/* List */}
           <div className="mt-6 space-y-3">
-            {paginatedData.map((item: any) => (
-              <div key={item._id} className="p-4 bg-white shadow rounded">
-                <p className="font-semibold">{item.title}</p>
-                <p className="text-sm text-gray-600">{item.description}</p>
-                <p>
-                  <p className="text-sm text-gray-600">{item.content}</p>
-                </p>
-              </div>
-            ))}
+            {paginatedData.length > 0 ? (
+              paginatedData.map((item: any) => (
+                <div
+                  key={item._id}
+                  className="p-4 bg-white shadow rounded"
+                >
+                  <p className="font-semibold">{item.title}</p>
+
+                  <p className="text-sm text-gray-600">
+                    {item.description}
+                  </p>
+
+                  {item.tags && (
+                    <p className="text-xs text-gray-400">
+                      Tags: {item.tags}
+                    </p>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p>No mantras found 😐</p>
+            )}
           </div>
 
+          {/* Pagination */}
           <div className="mt-6 flex gap-2">
             <button
               disabled={currentPage === 1}
