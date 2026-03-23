@@ -8,48 +8,37 @@ export default function MantraPage() {
 
   const itemsPerPage = 5;
 
-  // 🔥 React Query
-  const { data, isLoading, isError, error, refetch } = useQuery({
+  const { data, isLoading, isError, error} = useQuery({
     queryKey: ["mantras"],
     queryFn: () => getMantras(),
   });
 
-  // 🔍 Filter
+
   const filteredMantras = (data?.mantras ?? []).filter((item: any) =>
-    item.title?.toLowerCase().includes(search.toLowerCase())
+    item.title?.toLowerCase().includes(search.toLowerCase()),
   );
 
-  // 📄 Pagination
+ 
   const totalPages = Math.ceil(filteredMantras.length / itemsPerPage);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
 
   const paginatedData = filteredMantras.slice(
     startIndex,
-    startIndex + itemsPerPage
+    startIndex + itemsPerPage,
   );
 
-  // ❌ Error
+ 
   if (isError) {
-    return <div className="text-red-500">{(error as any).message}</div>;
+    return <div className="text-red-500">{error.message}</div>;
   }
 
   return (
     <div className="p-6">
-
-      
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Mantras</h1>
-
-        {/* <button
-          onClick={refetch}
-          className="bg-black text-white px-4 py-2 rounded"
-        >
-          Refresh
-        </button> */}
       </div>
 
-      
       <input
         type="text"
         placeholder="Search mantra..."
@@ -60,29 +49,23 @@ export default function MantraPage() {
         }}
         className="mt-4 p-2 border rounded w-full max-w-sm"
       />
-      
 
-      
       {isLoading ? (
         <p className="mt-6">Loading...</p>
       ) : (
         <>
-          
           <div className="mt-6 space-y-3">
             {paginatedData.map((item: any) => (
-              <div
-                key={item._id}
-                className="p-4 bg-white shadow rounded"
-              >
+              <div key={item._id} className="p-4 bg-white shadow rounded">
                 <p className="font-semibold">{item.title}</p>
-                <p className="text-sm text-gray-600">
-                  {item.description}
+                <p className="text-sm text-gray-600">{item.description}</p>
+                <p>
+                  <p className="text-sm text-gray-600">{item.content}</p>
                 </p>
               </div>
             ))}
           </div>
 
-          
           <div className="mt-6 flex gap-2">
             <button
               disabled={currentPage === 1}

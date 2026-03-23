@@ -23,6 +23,8 @@ export default function Header() {
           Home
         </NavLink>
 
+        <NavLink to="/create-mantra">Add Mantra</NavLink>
+
         <NavLink
           to="/stories"
           className={({ isActive }) =>

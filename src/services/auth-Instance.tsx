@@ -9,7 +9,8 @@ export const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use((config) => {
   const token = authService.getAccessToken();
 
-  //Adds the token to the request header if it exists
+  console.log("TOKEN USED ", token); 
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

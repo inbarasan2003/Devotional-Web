@@ -6,8 +6,7 @@ import RootLayout from "../Layouts/RootLayout";
 import Stories from "../Pages/Stories";
 import Profile from "../Pages/Profile/Profile";
 import ProtectedLayout from "./Protected-Routes";
-
-
+import CreateMantra from "../Pages/Mantra/Create-Mantra";
 
 const routes = [
   {
@@ -21,24 +20,29 @@ const routes = [
         path: "/login",
         element: <Login />,
       },
+
       {
-            element: <ProtectedLayout />, 
-            children: [
-              {
-                path: "/mantra",
-                element: <Mantra />,
-              },
-              {
-                path: "/stories",
-                element: <Stories />,
-              },
-              {
-                path: "/profile",
-                element: <Profile />,
-              },
-            ],
+        path: "/create-mantra",
+        element: <CreateMantra />,
+      },
+      {
+        element: <ProtectedLayout />,
+        children: [
+          {
+            path: "/mantra",
+            element: <Mantra />,
+          },
+          {
+            path: "/stories",
+            element: <Stories />,
+          },
+          {
+            path: "/profile",
+            element: <Profile />,
           },
         ],
       },
+    ],
+  },
 ];
 export const router = createBrowserRouter(routes);

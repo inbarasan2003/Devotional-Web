@@ -6,7 +6,7 @@ export function GetGoogleAccess(): Promise<string> {
     if (!(window as any).google) {
       reject("Google not loaded");
       return;
-    }
+    }                                                            
 
     //Creates a Google OAuth client with app ID and required user details
     const client = (window as any).google.accounts.oauth2.initTokenClient({
