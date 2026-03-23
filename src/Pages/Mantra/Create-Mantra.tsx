@@ -34,12 +34,11 @@ export default function CreateMantra() {
         description: form.description,
         tags: form.tags.trim(),
         photos: form.photos,
-        audio: form.audio,
+        audio: form.audio.trim(),
       };
 
       await createMantra(payload);
 
-      // 🔥 refresh list
       await queryClient.invalidateQueries({ queryKey: ["mantras"] });
 
       alert("Mantra Created ✅");
@@ -52,54 +51,84 @@ export default function CreateMantra() {
   };
 
   return (
-    <div className="p-6 max-w-md mx-auto">
-      <h1 className="text-xl font-bold mb-4">Add Mantra</h1>
+    <div className="min-h-screen bg-orange-50 flex items-center justify-center px-4">
+      
+      {/* 🔥 CARD */}
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-5">
+        
+        {/* 🔙 HEADER */}
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={() => navigate("/mantra")}
+            className="text-sm text-orange-600 hover:underline"
+          >
+            ← Back
+          </button>
 
-      <input
-        name="title"
-        placeholder="Title"
-        className="border p-2 w-full mb-3"
-        onChange={handleChange}
-      />
+          <h1 className="text-lg font-bold text-orange-600">
+            Add Mantra 🪔
+          </h1>
 
-      <textarea
-        name="description"
-        placeholder="Description"
-        className="border p-2 w-full mb-3"
-        onChange={handleChange}
-      />
+          <div /> {/* spacer */}
+        </div>
 
-      <input
-        name="tags"
-        placeholder="tags (comma separated)"
-        className="border p-2 w-full mb-3"
-        onChange={handleChange}
-      />
+        {/* 📝 FORM */}
+        <div className="space-y-3">
+          
+          {/* Title */}
+          <input
+            name="title"
+            placeholder="Mantra Title"
+            className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+            onChange={handleChange}
+          />
 
-      <input
-        placeholder="Photos URLs (comma separated)"
-        className="border p-2 w-full mb-3"
-        onChange={(e) =>
-          setForm({
-            ...form,
-            photos: e.target.value.split(","),
-          })
-        }
-      />
+          {/* Description */}
+          <textarea
+            name="description"
+            placeholder="Description"
+            rows={3}
+            className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+            onChange={handleChange}
+          />
 
-      <input
-        name="audio"
-        placeholder="Audio URL"
-        className="border p-2 w-full mb-3"
-        onChange={handleChange}
-      />
+          {/* Tags */}
+          <input
+            name="tags"
+            placeholder="Tags (comma separated)"
+            className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+            onChange={handleChange}
+          />
 
-      <button
-        onClick={handleSubmit}
-        className="bg-orange-500 text-white px-4 py-2 rounded w-full"
-      >
-        Create
-      </button>
+          {/* Photos */}
+          <input
+            placeholder="Image URLs (comma separated)"
+            className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+            onChange={(e) =>
+              setForm({
+                ...form,
+                photos: e.target.value.split(","),
+              })
+            }
+          />
+
+          {/* Audio */}
+          <input
+            name="audio"
+            placeholder="Audio URL (mp3 link)"
+            className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+            onChange={handleChange}
+          />
+        </div>
+
+        {/* 🔥 BUTTON */}
+        <button
+          onClick={handleSubmit}
+          className="mt-5 w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg font-medium transition"
+        >
+          Create Mantra
+        </button>
+      </div>
     </div>
   );
 }
