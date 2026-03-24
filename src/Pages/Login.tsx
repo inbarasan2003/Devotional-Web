@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthProvider";
 import { authService } from "../services/auth-Service";
 import { GetGoogleAccess } from "../services/google";
 import { useMutation } from "@tanstack/react-query";
-
+import toast from "react-hot-toast";
 export default function Login() {
   const navigate = useNavigate();
   //Getting the login function to handle user authentication.
@@ -19,6 +19,7 @@ export default function Login() {
     //After a successful API call, it logs in the user and redirects to the mantra page.
     onSuccess: (data) => {
       login(data.accessToken);
+      toast.success("Register Completed Successfully ✅");
       navigate("/mantra");
     },
   });
@@ -28,8 +29,30 @@ export default function Login() {
     try {
       const token = await GetGoogleAccess();
       mutation.mutate(token);
-    } catch (e: any) {
-      alert(e.message);
+    } catch (error: any) {
+        if (error.response) {
+
+        switch (error.response.status) {
+
+          case 401:
+            toast.error("Invalid Google token");
+            break;
+
+          case 403:
+            toast.error("Admin verification pending");
+            break;
+
+          case 404:
+            toast.error("User not registered");
+            break;
+
+          default:
+            toast.error("Login failed");
+        }
+
+      } else {
+        toast.error("Server error");
+      }
     }
   };
 

@@ -1,12 +1,23 @@
+// React state hook
 import { useState } from "react";
+
+// API function to create mantra
 import { createMantra } from "../../services/Mantra-api";
+
+// Navigation hook
 import { useNavigate } from "react-router-dom";
+
+// React Query cache control
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function CreateMantra() {
+  // for page navigation
   const navigate = useNavigate();
+
+  // for refetching data after create
   const queryClient = useQueryClient();
 
+  // form state (all input values stored here)
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -15,20 +26,25 @@ export default function CreateMantra() {
     audio: "",
   });
 
+  // handles input changes (common for all fields)
   const handleChange = (e: any) => {
     setForm({
-      ...form,
-      [e.target.name]: e.target.value,
+      ...form, // keep old values
+      [e.target.name]: e.target.value, // update specific field
     });
   };
 
+  // submit function (called when button clicked)
   const handleSubmit = async () => {
+
+    // validation check
     if (!form.title || !form.description) {
       alert("Fill required fields ❌");
       return;
     }
 
     try {
+      // preparing data to send to backend
       const payload = {
         title: form.title,
         description: form.description,
@@ -37,38 +53,58 @@ export default function CreateMantra() {
         audio: form.audio.trim(),
       };
 
+      // API call to create mantra
       await createMantra(payload);
 
+      // refresh mantra list after create
       await queryClient.invalidateQueries({ queryKey: ["mantras"] });
 
+      // success message
       alert("Mantra Created ✅");
 
+      // navigate back to list page
       navigate("/mantra");
+
     } catch (err: any) {
+      // log error for debugging
       console.error(err);
+
+      // show backend error if exists
       alert(err.response?.data?.message || "Error ❌");
     }
   };
 
   return (
+    // full page container
     <div className="min-h-screen bg-orange-50 flex items-center justify-center px-4">
-      {/* 🔥 CARD */}
+
+      {/* main card container */}
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-5">
-        {/* 🔙 HEADER */}
+
+        {/* header section */}
         <div className="flex items-center justify-between mb-4">
+
+          {/* back button */}
           <button
             onClick={() => navigate("/mantra")}
             className="text-sm text-orange-600 hover:underline"
           >
             ← Back
           </button>
-          <h1 className="text-lg font-bold text-orange-600">Add Mantra 🪔</h1>
-          <div /> {/* spacer */}
+
+          {/* title */}
+          <h1 className="text-lg font-bold text-orange-600">
+            Add Mantra 🪔
+          </h1>
+
+          {/* empty div for spacing */}
+          <div />
         </div>
 
-        {/* 📝 FORM */}
+        {/* form inputs */}
         <div className="space-y-3">
-          {/* Title */}
+
+          {/* title input */}
           <input
             name="title"
             placeholder="Mantra Title"
@@ -76,7 +112,7 @@ export default function CreateMantra() {
             onChange={handleChange}
           />
 
-          {/* Description */}
+          {/* description textarea */}
           <textarea
             name="description"
             placeholder="Description"
@@ -85,7 +121,7 @@ export default function CreateMantra() {
             onChange={handleChange}
           />
 
-          {/* Tags */}
+          {/* tags input (max 3 tags logic) */}
           <input
             name="tags"
             placeholder="Max 3 tags (comma separated)"
@@ -95,6 +131,7 @@ export default function CreateMantra() {
 
               const tags = value.split(",");
 
+              // allow only 3 tags
               if (tags.length <= 3) {
                 setForm({
                   ...form,
@@ -104,7 +141,7 @@ export default function CreateMantra() {
             }}
           />
 
-          {/* Photos */}
+          {/* photos input (convert string → array) */}
           <input
             placeholder="Image URLs (comma separated)"
             className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
@@ -116,7 +153,7 @@ export default function CreateMantra() {
             }
           />
 
-          {/* Audio */}
+          {/* audio input */}
           <input
             name="audio"
             placeholder="Audio URL (mp3 link)"
@@ -125,7 +162,7 @@ export default function CreateMantra() {
           />
         </div>
 
-        {/* 🔥 BUTTON */}
+        {/* submit button */}
         <button
           onClick={handleSubmit}
           className="mt-5 w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg font-medium transition"
