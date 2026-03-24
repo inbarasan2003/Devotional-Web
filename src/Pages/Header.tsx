@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 
 export default function Header() {
 
-  const { logout } = useAuth();
+  // const { logout } = useAuth();
 
   // dropdown open state
   const [open, setOpen] = useState(false);

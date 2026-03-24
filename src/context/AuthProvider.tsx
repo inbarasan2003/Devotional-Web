@@ -1,7 +1,7 @@
 import { createContext, useEffect, useMemo, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../services/auth-Service";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 
 //Default value undefined
 const AuthContext = createContext<any>(undefined);
