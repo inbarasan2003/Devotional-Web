@@ -52,10 +52,8 @@ export default function CreateMantra() {
 
   return (
     <div className="min-h-screen bg-orange-50 flex items-center justify-center px-4">
-      
       {/* 🔥 CARD */}
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-5">
-        
         {/* 🔙 HEADER */}
         <div className="flex items-center justify-between mb-4">
           <button
@@ -64,17 +62,12 @@ export default function CreateMantra() {
           >
             ← Back
           </button>
-
-          <h1 className="text-lg font-bold text-orange-600">
-            Add Mantra 🪔
-          </h1>
-
+          <h1 className="text-lg font-bold text-orange-600">Add Mantra 🪔</h1>
           <div /> {/* spacer */}
         </div>
 
         {/* 📝 FORM */}
         <div className="space-y-3">
-          
           {/* Title */}
           <input
             name="title"
@@ -95,9 +88,20 @@ export default function CreateMantra() {
           {/* Tags */}
           <input
             name="tags"
-            placeholder="Tags (comma separated)"
-            className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
-            onChange={handleChange}
+            placeholder="Max 3 tags (comma separated)"
+            className="w-full border p-2 rounded text-sm"
+            onChange={(e) => {
+              const value = e.target.value;
+
+              const tags = value.split(",");
+
+              if (tags.length <= 3) {
+                setForm({
+                  ...form,
+                  tags: value,
+                });
+              }
+            }}
           />
 
           {/* Photos */}

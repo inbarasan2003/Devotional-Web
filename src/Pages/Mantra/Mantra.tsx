@@ -117,7 +117,7 @@ export default function MantraPage() {
 
                   {/* 🏷️ TAGS */}
                   {item.tags && (
-                    <p className="text-[10px] text-gray-400 mt-1 truncate">
+                    <p className="text-[10px] text-gray-400 mt-1 truncate ">
                       #{item.tags}
                     </p>
                   )}
