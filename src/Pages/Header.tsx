@@ -87,6 +87,8 @@ export default function Header() {
           Stories
         </NavLink>
 
+        <NavLink to={'/create-Story'}>Add Story</NavLink>
+
         {/* PROFILE DROPDOWN */}
         <div className="relative">
 
@@ -95,7 +97,7 @@ export default function Header() {
             onClick={() => setOpen((prev) => !prev)}
             className="text-gray-600 hover:text-orange-500"
           >
-            Profile ⬇️
+            Profile
           </button>
 
           {/* dropdown */}

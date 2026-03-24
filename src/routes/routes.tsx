@@ -1,12 +1,13 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import Login from "../Pages/Login";
 import Mantra from "../Pages/Mantra/Mantra";
-import ProtectedRoute from "./Protected-Routes";
+// import ProtectedRoute from "./Protected-Routes";
 import RootLayout from "../Layouts/RootLayout";
-import Stories from "../Pages/Stories";
+import Stories from "../Pages/Stories/Stories";
 import Profile from "../Pages/Profile/Profile";
 import ProtectedLayout from "./Protected-Routes";
 import CreateMantra from "../Pages/Mantra/Create-Mantra";
+import CreateStory from "../Pages/Stories/Create-Story";
 
 const routes = [
   {
@@ -20,17 +21,21 @@ const routes = [
         path: "/login",
         element: <Login />,
       },
-
-      {
-        path: "/create-mantra",
-        element: <CreateMantra />,
-      },
       {
         element: <ProtectedLayout />,
         children: [
           {
             path: "/mantra",
             element: <Mantra />,
+          },
+          {
+            path: "/create-mantra",
+            element: <CreateMantra />,
+          },
+
+          {
+            path:'/create-Story',
+            element:<CreateStory/>
           },
           {
             path: "/stories",

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getMantras, deleteMantra } from "../../services/Mantra-api";
 import AppPagination from "../../components/Pagination";
+import { deleteStories, getStories } from "../../services/Story-api";
 
 export default function MantraPage() {
 
@@ -12,8 +12,8 @@ export default function MantraPage() {
   const itemsPerPage = 8;
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["mantras"],
-    queryFn: getMantras,
+    queryKey: ["stories"],
+    queryFn: getStories,
   });
 
   const filteredMantras = (data ?? []).filter((item: any) =>
@@ -33,13 +33,13 @@ export default function MantraPage() {
   );
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Delete this mantra?")) return;
+    if (!window.confirm("Delete this Story?")) return;
 
     try {
-      await deleteMantra(id);
-      await queryClient.invalidateQueries({ queryKey: ["mantras"] });
+      await deleteStories(id);
+      await queryClient.invalidateQueries({ queryKey: ["stories"] });
     } catch {
-      alert("Delete failed ❌");
+      alert(error?.message);
     }
   };
 
@@ -52,38 +52,38 @@ export default function MantraPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-orange-50 p-4 md:p-6">
+    <div className="min-h-screen bg-orange-50 p-4 md:p-6">
 
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
 
-        <h1 className="text-2xl md:text-3xl font-bold text-orange-600">
-          🪔 Devotional Mantras
+        <h1 className="text-xl md:text-2xl font-bold text-orange-600">
+          🪔 Devotional Stories
         </h1>
 
         <input
           type="text"
-          placeholder="Search mantra..."
+          placeholder="Search Story..."
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
             setCurrentPage(1);
           }}
-          className="w-full md:w-72 px-4 py-2 rounded-full border bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-orange-300 text-sm"
+          className="w-full md:w-64 px-4 py-2 rounded-full border bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-300 text-sm"
         />
       </div>
 
       {/* LOADING */}
       {isLoading ? (
         <div className="flex justify-center mt-10">
-          <p className="text-gray-500 animate-pulse text-sm">
-            Loading mantras...
+          <p className="text-gray-500 text-sm animate-pulse">
+            Loading...
           </p>
         </div>
       ) : (
         <>
           {/* GRID */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
 
             {paginatedData.length > 0 ? (
               paginatedData.map((item: any) => {
@@ -92,20 +92,24 @@ export default function MantraPage() {
                   ? item.tags
                   : item.tags?.split(",") || [];
 
+                // 🔥 FIX: main image logic
+                const imageUrl =
+                  item.titlePhoto || item.photos?.[0];
+
                 return (
                   <div
                     key={item._id}
-                    className="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden flex flex-col"
+                    className="bg-white rounded-xl shadow-md hover:shadow-lg transition overflow-hidden flex flex-col max-w-75 mx-auto"
                   >
 
-                    {/* 🔥 IMAGE FIXED */}
-                    {item.photos?.length > 0 && (
-                      <div className="relative w-full aspect-[3/4] overflow-hidden">
+                    {/* IMAGE */}
+                    {imageUrl && (
+                      <div className="w-full h-36 overflow-hidden">
                         <img
-                          src={item.photos[0]}
-                          alt="mantra"
+                          src={imageUrl}
+                          alt="story"
                           loading="lazy"
-                          className="absolute inset-0 w-full h-full object-cover transition duration-300 hover:scale-105"
+                          className="w-full h-full object-cover object-center"
                         />
                       </div>
                     )}
@@ -113,7 +117,7 @@ export default function MantraPage() {
                     {/* CONTENT */}
                     <div className="p-4 flex flex-col flex-1">
 
-                      <h2 className="text-sm font-semibold text-orange-600 line-clamp-1">
+                      <h2 className="text-sm font-semibold text-orange-600 truncate">
                         {item.title}
                       </h2>
 
@@ -140,7 +144,7 @@ export default function MantraPage() {
                         <audio
                           controls
                           src={item.audio}
-                          className="mt-3 w-full"
+                          className="mt-3 w-full h-8"
                         />
                       )}
 
@@ -148,7 +152,7 @@ export default function MantraPage() {
                       <div className="flex justify-end mt-auto pt-3">
                         <button
                           onClick={() => handleDelete(item._id)}
-                          className="text-xs bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-full"
+                          className="text-xs bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
                         >
                           Delete
                         </button>
@@ -160,7 +164,7 @@ export default function MantraPage() {
               })
             ) : (
               <p className="text-center col-span-full text-gray-500">
-                No mantras found 😐
+                No Stories found 😐
               </p>
             )}
           </div>
