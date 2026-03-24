@@ -52,7 +52,7 @@ export default function MantraPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-orange-50 p-4 md:p-6">
+    <div className="min-h-screen bg-linear-to-b from-orange-50 via-white to-orange-50 p-4 md:p-6">
 
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
@@ -100,7 +100,7 @@ export default function MantraPage() {
 
                     {/* 🔥 IMAGE FIXED */}
                     {item.photos?.length > 0 && (
-                      <div className="relative w-full aspect-[3/4] overflow-hidden">
+                      <div className="relative w-full aspect-3/4 overflow-hidden">
                         <img
                           src={item.photos[0]}
                           alt="mantra"
