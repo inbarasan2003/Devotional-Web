@@ -4,13 +4,13 @@ import toast from "react-hot-toast";
 
 export default function Header() {
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // profile dropdown
+  const [menuOpen, setMenuOpen] = useState(false); // mobile menu
   const navigate = useNavigate();
 
-  // 🔥 ref for dropdown
   const dropdownRef = useRef<any>(null);
 
-  // 🔥 close on outside click
+  // close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event: any) => {
       if (
@@ -39,7 +39,6 @@ export default function Header() {
 
         <div className="flex justify-end gap-3">
 
-          {/* cancel */}
           <button
             onClick={() => toast.dismiss(t.id)}
             className="px-3 py-1 border rounded text-sm"
@@ -47,14 +46,10 @@ export default function Header() {
             Cancel
           </button>
 
-          {/* confirm */}
           <button
             onClick={() => {
               toast.dismiss(t.id);
-
-              toast.success("Logout successfully", {
-                duration: 2000
-              });
+              toast.success("Logout successfully");
 
               setTimeout(() => {
                 localStorage.clear();
@@ -73,57 +68,38 @@ export default function Header() {
   };
 
   return (
-    <header className="flex justify-between items-center px-6 py-6 shadow bg-white">
+    <header className="bg-white shadow px-4 md:px-6 py-4 flex justify-between items-center">
 
       {/* LOGO */}
       <h2 className="font-bold text-xl text-orange-500">
         DevoTion 🙏
       </h2>
 
-      {/* NAV */}
-      <nav className="flex gap-6 items-center">
+      {/* DESKTOP NAV */}
+      <nav className="hidden md:flex gap-6 items-center">
 
-        <NavLink
-          to="/mantra"
-          className={({ isActive }) =>
-            isActive ? "text-orange-500 font-semibold" : "text-gray-600"
-          }
-        >
-          Home
-        </NavLink>
-
+        <NavLink to="/mantra">Home</NavLink>
         <NavLink to="/create-mantra">Add Mantra</NavLink>
-
-        <NavLink
-          to="/stories"
-          className={({ isActive }) =>
-            isActive ? "text-orange-500 font-semibold" : "text-gray-600"
-          }
-        >
-          Stories
-        </NavLink>
-
+        <NavLink to="/stories">Stories</NavLink>
         <NavLink to="/create-Story">Add Story</NavLink>
 
-        {/* 🔥 PROFILE DROPDOWN */}
+        {/* PROFILE */}
         <div ref={dropdownRef} className="relative">
 
-          {/* button */}
           <button
             onClick={() => setOpen((prev) => !prev)}
-            className="text-gray-600 hover:text-orange-500"
+            className="hover:text-orange-500"
           >
             Profile
           </button>
 
-          {/* dropdown */}
           {open && (
             <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg py-2">
 
               <NavLink
                 to="/profile"
-                className="block px-4 py-2 text-sm hover:bg-gray-100"
                 onClick={() => setOpen(false)}
+                className="block px-4 py-2 text-sm hover:bg-gray-100"
               >
                 My Profile
               </NavLink>
@@ -138,8 +114,52 @@ export default function Header() {
             </div>
           )}
         </div>
-
       </nav>
+
+      {/* MOBILE MENU ICON */}
+      <button
+        onClick={() => setMenuOpen(!menuOpen)}
+        className="md:hidden text-2xl"
+      >
+        ☰
+      </button>
+
+      {/* MOBILE MENU */}
+      {menuOpen && (
+        <div className="absolute top-16 left-0 w-full bg-white shadow-md flex flex-col items-center gap-4 py-4 md:hidden z-50">
+
+          <NavLink to="/mantra" onClick={() => setMenuOpen(false)}>
+            Home
+          </NavLink>
+
+          <NavLink to="/create-mantra" onClick={() => setMenuOpen(false)}>
+            Add Mantra
+          </NavLink>
+
+          <NavLink to="/stories" onClick={() => setMenuOpen(false)}>
+            Stories
+          </NavLink>
+
+          <NavLink to="/create-Story" onClick={() => setMenuOpen(false)}>
+            Add Story
+          </NavLink>
+
+          <NavLink to="/profile" onClick={() => setMenuOpen(false)}>
+            My Profile
+          </NavLink>
+
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              handleLogoutConfirm();
+            }}
+            className="text-red-500"
+          >
+            Logout
+          </button>
+
+        </div>
+      )}
     </header>
   );
 }
