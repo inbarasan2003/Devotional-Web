@@ -20,7 +20,7 @@ export default function Login() {
     onSuccess: (data) => {
       login(data.accessToken);
       toast.success("Register Completed Successfully ✅");
-      navigate("/mantra");
+      navigate("/home");
     },
   });
 

@@ -77,8 +77,8 @@ export default function Header() {
 
       {/* DESKTOP NAV */}
       <nav className="hidden md:flex gap-6 items-center z-50">
-
-        <NavLink to="/mantra">Home</NavLink>
+        <NavLink to='/home'>Home</NavLink>
+        <NavLink to="/mantra">Mantra</NavLink>
         <NavLink to="/create-mantra">Add Mantra</NavLink>
         <NavLink to="/stories">Stories</NavLink>
         <NavLink to="/create-Story">Add Story</NavLink>
@@ -127,9 +127,12 @@ export default function Header() {
       {/* MOBILE MENU */}
       {menuOpen && (
         <div className="absolute top-16 left-0 w-full bg-white shadow-md flex flex-col items-center gap-4 py-4 md:hidden z-50">
+          <NavLink to="/home" onClick={() => setMenuOpen(false)}>
+            Home
+          </NavLink>
 
           <NavLink to="/mantra" onClick={() => setMenuOpen(false)}>
-            Home
+            Mantra
           </NavLink>
 
           <NavLink to="/create-mantra" onClick={() => setMenuOpen(false)}>

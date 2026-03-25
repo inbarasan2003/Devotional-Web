@@ -8,6 +8,7 @@ import Profile from "../Pages/Profile/Profile";
 import ProtectedLayout from "./Protected-Routes";
 import CreateMantra from "../Pages/Mantra/Create-Mantra";
 import CreateStory from "../Pages/Stories/Create-Story";
+import Home from "../Pages/Home";
 
 const routes = [
   {
@@ -21,9 +22,15 @@ const routes = [
         path: "/login",
         element: <Login />,
       },
+      
       {
         element: <ProtectedLayout />,
         children: [
+           {
+              path:'/home',
+              element:<Home/>
+          },
+         
           {
             path: "/mantra",
             element: <Mantra />,
