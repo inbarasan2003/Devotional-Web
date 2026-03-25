@@ -8,7 +8,7 @@ export default function Home() {
     <div className="mt-16 bg-orange-50 min-h-screen flex flex-col">
 
       {/* 🔥 HERO SECTION */}
-      <section className="text-center px-4 py-10 md:py-16 bg-gradient-to-b from-orange-100 to-orange-50">
+      <section className="text-center px-4 py-10 md:py-16 bg-linear-to-b from-orange-100 to-orange-50">
 
         <h1 className="text-2xl md:text-4xl font-bold text-orange-600">
           🪔 Welcome to Devotional World
