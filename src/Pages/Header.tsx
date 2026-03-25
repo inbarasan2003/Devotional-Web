@@ -1,15 +1,32 @@
 import { NavLink, useNavigate } from "react-router-dom";
-// import { useAuth } from "../context/AuthProvider";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import toast from "react-hot-toast";
 
 export default function Header() {
 
-  // const { logout } = useAuth();
-
-  // dropdown open state
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  // 🔥 ref for dropdown
+  const dropdownRef = useRef<any>(null);
+
+  // 🔥 close on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // logout confirm
   const handleLogoutConfirm = () => {
@@ -34,16 +51,16 @@ export default function Header() {
           <button
             onClick={() => {
               toast.dismiss(t.id);
-               // call your auth logout
+
               toast.success("Logout successfully", {
                 duration: 2000
-              })
+              });
 
               setTimeout(() => {
-                localStorage.clear()
-                navigate('/login')
+                localStorage.clear();
+                navigate("/login");
                 window.location.reload();
-              }, 1200)
+              }, 1200);
             }}
             className="px-3 py-1 bg-red-500 text-white rounded text-sm"
           >
@@ -51,14 +68,13 @@ export default function Header() {
           </button>
 
         </div>
-
       </div>
     ));
   };
 
   return (
     <header className="flex justify-between items-center px-6 py-6 shadow bg-white">
-      
+
       {/* LOGO */}
       <h2 className="font-bold text-xl text-orange-500">
         DevoTion 🙏
@@ -87,12 +103,12 @@ export default function Header() {
           Stories
         </NavLink>
 
-        <NavLink to={'/create-Story'}>Add Story</NavLink>
+        <NavLink to="/create-Story">Add Story</NavLink>
 
-        {/* PROFILE DROPDOWN */}
-        <div className="relative">
+        {/* 🔥 PROFILE DROPDOWN */}
+        <div ref={dropdownRef} className="relative">
 
-          {/* profile button */}
+          {/* button */}
           <button
             onClick={() => setOpen((prev) => !prev)}
             className="text-gray-600 hover:text-orange-500"
@@ -104,10 +120,10 @@ export default function Header() {
           {open && (
             <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg py-2">
 
-
               <NavLink
                 to="/profile"
                 className="block px-4 py-2 text-sm hover:bg-gray-100"
+                onClick={() => setOpen(false)}
               >
                 My Profile
               </NavLink>

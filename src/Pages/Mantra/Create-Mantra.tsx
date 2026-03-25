@@ -1,23 +1,27 @@
-// React state hook
+// React state
 import { useState } from "react";
 
-// API function to create mantra
+// API
 import { createMantra } from "../../services/Mantra-api";
 
-// Navigation hook
+// Navigation
 import { useNavigate } from "react-router-dom";
 
-// React Query cache control
+// React Query
 import { useQueryClient } from "@tanstack/react-query";
 
+// Toast
+import toast from "react-hot-toast";
+
 export default function CreateMantra() {
-  // for page navigation
+
+  // navigation
   const navigate = useNavigate();
 
-  // for refetching data after create
+  // query refresh
   const queryClient = useQueryClient();
 
-  // form state (all input values stored here)
+  // form state
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -26,65 +30,62 @@ export default function CreateMantra() {
     audio: "",
   });
 
-  // handles input changes (common for all fields)
+  // handle input change
   const handleChange = (e: any) => {
     setForm({
-      ...form, // keep old values
-      [e.target.name]: e.target.value, // update specific field
+      ...form,
+      [e.target.name]: e.target.value,
     });
   };
 
-  // submit function (called when button clicked)
+  // submit
   const handleSubmit = async () => {
 
-    // validation check
+    // validation
     if (!form.title || !form.description) {
-      alert("Fill required fields ❌");
+      toast.error("Fill required fields ❌");
       return;
     }
 
+    // prepare data
+    const payload = {
+      title: form.title,
+      description: form.description,
+      tags: form.tags.trim(),
+      photos: form.photos,
+      audio: form.audio.trim(),
+    };
+
     try {
-      // preparing data to send to backend
-      const payload = {
-        title: form.title,
-        description: form.description,
-        tags: form.tags.trim(),
-        photos: form.photos,
-        audio: form.audio.trim(),
-      };
 
-      // API call to create mantra
-      await createMantra(payload);
+      // toast promise (loading, success, error)
+      await toast.promise(
+        createMantra(payload),
+        {
+          loading: "Creating Mantra...",
+          success: "Mantra Created ✅",
+          error: "Failed ❌",
+        }
+      );
 
-      // refresh mantra list after create
+      // refresh list
       await queryClient.invalidateQueries({ queryKey: ["mantras"] });
 
-      // success message
-      alert("Mantra Created ✅");
-
-      // navigate back to list page
+      // redirect
       navigate("/mantra");
 
     } catch (err: any) {
-      // log error for debugging
       console.error(err);
-
-      // show backend error if exists
-      alert(err.response?.data?.message || "Error ❌");
     }
   };
 
   return (
-    // full page container
     <div className="min-h-screen bg-orange-50 flex items-center justify-center px-4">
-
-      {/* main card container */}
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-5">
 
-        {/* header section */}
+        {/* header */}
         <div className="flex items-center justify-between mb-4">
 
-          {/* back button */}
           <button
             onClick={() => navigate("/mantra")}
             className="text-sm text-orange-600 hover:underline"
@@ -92,59 +93,50 @@ export default function CreateMantra() {
             ← Back
           </button>
 
-          {/* title */}
           <h1 className="text-lg font-bold text-orange-600">
             Add Mantra 🪔
           </h1>
 
-          {/* empty div for spacing */}
           <div />
         </div>
 
-        {/* form inputs */}
+        {/* form */}
         <div className="space-y-3">
 
-          {/* title input */}
           <input
             name="title"
             placeholder="Mantra Title"
-            className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+            className="w-full border p-2 rounded text-sm"
             onChange={handleChange}
           />
 
-          {/* description textarea */}
           <textarea
             name="description"
             placeholder="Description"
             rows={3}
-            className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+            className="w-full border p-2 rounded text-sm"
             onChange={handleChange}
           />
 
-          {/* tags input (max 3 tags logic) */}
+          {/* max 3 tags */}
           <input
             name="tags"
-            placeholder="Max 3 tags (comma separated)"
+            placeholder="Max 3 tags"
             className="w-full border p-2 rounded text-sm"
             onChange={(e) => {
               const value = e.target.value;
-
               const tags = value.split(",");
 
-              // allow only 3 tags
               if (tags.length <= 3) {
-                setForm({
-                  ...form,
-                  tags: value,
-                });
+                setForm({ ...form, tags: value });
               }
             }}
           />
 
-          {/* photos input (convert string → array) */}
+          {/* photos */}
           <input
-            placeholder="Image URLs (comma separated)"
-            className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+            placeholder="Image URLs"
+            className="w-full border p-2 rounded text-sm"
             onChange={(e) =>
               setForm({
                 ...form,
@@ -153,22 +145,23 @@ export default function CreateMantra() {
             }
           />
 
-          {/* audio input */}
+          {/* audio */}
           <input
             name="audio"
-            placeholder="Audio URL (mp3 link)"
-            className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+            placeholder="Audio URL"
+            className="w-full border p-2 rounded text-sm"
             onChange={handleChange}
           />
         </div>
 
-        {/* submit button */}
+        {/* button */}
         <button
           onClick={handleSubmit}
-          className="mt-5 w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg font-medium transition"
+          className="mt-5 w-full bg-orange-500 text-white py-2 rounded-lg"
         >
           Create Mantra
         </button>
+
       </div>
     </div>
   );

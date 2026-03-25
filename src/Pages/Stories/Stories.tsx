@@ -2,11 +2,16 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import AppPagination from "../../components/Pagination";
 import { deleteStories, getStories } from "../../services/Story-api";
+import toast from "react-hot-toast";
 
 export default function MantraPage() {
 
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  // 🔥 modal state
+  const [deleteItem, setDeleteItem] = useState<any>(null);
+  const [open, setOpen] = useState(false);
 
   const queryClient = useQueryClient();
   const itemsPerPage = 8;
@@ -32,14 +37,27 @@ export default function MantraPage() {
     startIndex + itemsPerPage
   );
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Delete this Story?")) return;
+  // 🔥 confirm delete
+  const confirmDelete = async () => {
+    if (!deleteItem) return;
 
     try {
-      await deleteStories(id);
+      await toast.promise(
+        deleteStories(deleteItem._id),
+        {
+          loading: "Deleting Story...",
+          success: "Story Deleted ✅",
+          error: "Delete Failed ❌",
+        }
+      );
+
       await queryClient.invalidateQueries({ queryKey: ["stories"] });
-    } catch {
-      alert(error?.message);
+
+      setOpen(false);
+      setDeleteItem(null);
+
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -69,7 +87,7 @@ export default function MantraPage() {
             setSearch(e.target.value);
             setCurrentPage(1);
           }}
-          className="w-full md:w-64 px-4 py-2 rounded-full border bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-300 text-sm"
+          className="w-full md:w-64 px-4 py-2 rounded-full border bg-white shadow-sm text-sm"
         />
       </div>
 
@@ -92,32 +110,28 @@ export default function MantraPage() {
                   ? item.tags
                   : item.tags?.split(",") || [];
 
-                // 🔥 FIX: main image logic
                 const imageUrl =
                   item.titlePhoto || item.photos?.[0];
 
                 return (
                   <div
                     key={item._id}
-                    className="bg-white rounded-xl shadow-md hover:shadow-lg transition overflow-hidden flex flex-col max-w-75 mx-auto"
+                    className="bg-white rounded-xl shadow-md hover:shadow-lg flex flex-col max-w-75 mx-auto"
                   >
 
                     {/* IMAGE */}
                     {imageUrl && (
-                      <div className="w-full h-36 overflow-hidden">
-                        <img
-                          src={imageUrl}
-                          alt="story"
-                          loading="lazy"
-                          className="w-full h-full object-cover object-center"
-                        />
-                      </div>
+                      <img
+                        src={imageUrl}
+                        alt="story"
+                        className="w-full h-36 object-cover"
+                      />
                     )}
 
                     {/* CONTENT */}
                     <div className="p-4 flex flex-col flex-1">
 
-                      <h2 className="text-sm font-semibold text-orange-600 truncate">
+                      <h2 className="text-sm font-semibold text-orange-600">
                         {item.title}
                       </h2>
 
@@ -126,33 +140,25 @@ export default function MantraPage() {
                       </p>
 
                       {/* TAGS */}
-                      {tagsArray.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {tagsArray.map((tag: string, i: number) => (
-                            <span
-                              key={i}
-                              className="text-[10px] bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full"
-                            >
-                              #{tag.trim()}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* AUDIO */}
-                      {item.audio && (
-                        <audio
-                          controls
-                          src={item.audio}
-                          className="mt-3 w-full h-8"
-                        />
-                      )}
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {tagsArray.map((tag: string, i: number) => (
+                          <span
+                            key={i}
+                            className="text-[10px] bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full"
+                          >
+                            #{tag.trim()}
+                          </span>
+                        ))}
+                      </div>
 
                       {/* DELETE */}
                       <div className="flex justify-end mt-auto pt-3">
                         <button
-                          onClick={() => handleDelete(item._id)}
-                          className="text-xs bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
+                          onClick={() => {
+                            setDeleteItem(item);
+                            setOpen(true);
+                          }}
+                          className="text-xs bg-red-500 text-white px-3 py-1 rounded-md"
                         >
                           Delete
                         </button>
@@ -178,6 +184,44 @@ export default function MantraPage() {
             />
           </div>
         </>
+      )}
+
+      {/* 🔥 MODAL */}
+      {open && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+
+          <div className="bg-white rounded-xl p-6 w-[90%] max-w-sm text-center shadow-lg">
+
+            <h2 className="text-lg font-semibold text-red-600 mb-2">
+              Delete Story
+            </h2>
+
+            <p className="text-sm text-gray-600 mb-4">
+              Are you sure you want to delete <br />
+              <span className="font-medium text-black">
+                {deleteItem?.title}
+              </span> ?
+            </p>
+
+            <div className="flex justify-center gap-3">
+
+              <button
+                onClick={() => setOpen(false)}
+                className="px-4 py-1 bg-gray-200 rounded-md text-sm"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-1 bg-red-500 text-white rounded-md text-sm"
+              >
+                Delete
+              </button>
+
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

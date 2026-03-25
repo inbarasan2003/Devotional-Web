@@ -1,6 +1,7 @@
 import { CreateStories } from "../../services/Story-api";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 export default function CreateStory() {
@@ -11,8 +12,8 @@ export default function CreateStory() {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    category: "",      // ✅ added
-    titlePhoto: "",    // ✅ added
+    category: "",
+    titlePhoto: "",
     tags: "",
     photos: [] as string[],
     audio: "",
@@ -27,41 +28,51 @@ export default function CreateStory() {
 
   const handleSubmit = async () => {
 
+    // validation
     if (!form.title || !form.description || !form.category || !form.titlePhoto) {
-      alert("Fill all required fields ❌");
+      toast.error("Fill all required fields ❌");
       return;
     }
 
+    const payload = {
+      title: form.title,
+      description: form.description,
+      category: form.category,
+      titlePhoto: form.titlePhoto,
+      tags: form.tags.trim(),
+      photos: form.photos,
+      audio: form.audio.trim(),
+    };
+
     try {
-      const payload = {
-        title: form.title,
-        description: form.description,
-        category: form.category,        // ✅ added
-        titlePhoto: form.titlePhoto,    // ✅ added
-        tags: form.tags.trim(),
-        photos: form.photos,
-        audio: form.audio.trim(),
-      };
 
-      await CreateStories(payload);
+      // toast promise (single API call)
+      await toast.promise(
+        CreateStories(payload),
+        {
+          loading: "Creating Story...",
+          success: "Story Created ✅",
+          error: "Failed ❌",
+        }
+      );
 
+      // refresh list
       await queryClient.invalidateQueries({ queryKey: ["stories"] });
 
-      alert("Story Created ✅");
-
+      // redirect
       navigate("/stories");
+
     } catch (error: any) {
-      alert(error.response?.data?.message || "Error ❌");
+      console.error(error);
     }
   };
 
   return (
     <div className="min-h-screen bg-linear-to-b from-orange-50 to-white flex items-center justify-center px-4">
 
-      {/* CARD */}
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-5 sm:p-6">
 
-        {/* HEADER */}
+        {/* header */}
         <div className="flex items-center justify-between mb-4">
 
           <button
@@ -78,64 +89,56 @@ export default function CreateStory() {
           <div />
         </div>
 
-        {/* FORM */}
+        {/* form */}
         <div className="space-y-3">
 
-          {/* TITLE */}
           <input
             name="title"
             placeholder="Story Title"
             onChange={handleChange}
-            className="w-full border p-2 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+            className="w-full border p-2 rounded-md text-sm"
           />
 
-          {/* DESCRIPTION */}
           <textarea
             name="description"
             placeholder="Story Description"
             rows={3}
             onChange={handleChange}
-            className="w-full border p-2 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+            className="w-full border p-2 rounded-md text-sm"
           />
 
-          {/* CATEGORY */}
           <input
             name="category"
-            placeholder="Category (e.g. Shiva, Vishnu)"
+            placeholder="Category"
             onChange={handleChange}
-            className="w-full border p-2 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+            className="w-full border p-2 rounded-md text-sm"
           />
 
-          {/* TITLE PHOTO */}
           <input
             name="titlePhoto"
             placeholder="Title Image URL"
             onChange={handleChange}
-            className="w-full border p-2 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+            className="w-full border p-2 rounded-md text-sm"
           />
 
-          {/* TAGS */}
+          {/* max 3 tags */}
           <input
             name="tags"
-            placeholder="Max 3 tags (comma separated)"
+            placeholder="Max 3 tags"
             className="w-full border p-2 rounded-md text-sm"
             onChange={(e) => {
               const value = e.target.value;
               const tags = value.split(",");
 
               if (tags.length <= 3) {
-                setForm({
-                  ...form,
-                  tags: value,
-                });
+                setForm({ ...form, tags: value });
               }
             }}
           />
 
-          {/* PHOTOS */}
           <input
-            placeholder="Image URLs (comma separated)"
-            className="w-full border p-2 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+            placeholder="Image URLs"
+            className="w-full border p-2 rounded-md text-sm"
             onChange={(e) =>
               setForm({
                 ...form,
@@ -144,19 +147,17 @@ export default function CreateStory() {
             }
           />
 
-          {/* AUDIO */}
           <input
             name="audio"
-            placeholder="Audio URL (mp3 link)"
+            placeholder="Audio URL"
             onChange={handleChange}
-            className="w-full border p-2 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+            className="w-full border p-2 rounded-md text-sm"
           />
         </div>
 
-        {/* BUTTON */}
         <button
           onClick={handleSubmit}
-          className="mt-5 w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg font-medium transition"
+          className="mt-5 w-full bg-orange-500 text-white py-2 rounded-lg"
         >
           Create Story
         </button>
