@@ -68,7 +68,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white shadow px-4 md:px-6 py-4 flex justify-between items-center">
+    <header className="bg-white shadow px-4 md:px-6 py-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
 
       {/* LOGO */}
       <h2 className="font-bold text-xl text-orange-500">
@@ -76,7 +76,7 @@ export default function Header() {
       </h2>
 
       {/* DESKTOP NAV */}
-      <nav className="hidden md:flex gap-6 items-center">
+      <nav className="hidden md:flex gap-6 items-center z-50">
 
         <NavLink to="/mantra">Home</NavLink>
         <NavLink to="/create-mantra">Add Mantra</NavLink>
