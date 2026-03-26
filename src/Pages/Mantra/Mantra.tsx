@@ -90,6 +90,7 @@ export default function MantraPage() {
 
   return (
     <div className="min-h-screen bg-orange-50 p-4 md:p-6 mt-15 pb-28">
+
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-5">
 
@@ -119,7 +120,7 @@ export default function MantraPage() {
       ) : (
         <>
           {/* GRID */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 justify-items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 justify-items-center items-stretch">
 
             {/* loop each mantra */}
             {paginatedData.map((item: any) => {
@@ -132,7 +133,9 @@ export default function MantraPage() {
               return (
                 <div
                   key={item._id} // unique key
-                  className="bg-white rounded-xl shadow-md flex flex-col w-65 overflow-hidden hover:shadow-lg transition"
+
+                  // 🔥 FIXED: responsive width (no overflow)
+                  className="bg-white rounded-xl shadow-md flex flex-col w-full max-w-65 overflow-hidden hover:shadow-lg transition"
                 >
 
                   {/* IMAGE */}

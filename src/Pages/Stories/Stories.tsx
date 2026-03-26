@@ -114,7 +114,7 @@ export default function StoriesPage() {
       ) : (
         <>
           {/* GRID */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 justify-items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 justify-items-center items-stretch">
 
             {/* loop stories */}
             {paginatedData.map((item: any) => {
@@ -130,7 +130,9 @@ export default function StoriesPage() {
               return (
                 <div
                   key={item._id} // unique key
-                  className="bg-white rounded-xl shadow-md flex flex-col w-65 overflow-hidden hover:shadow-lg transition"
+
+                  // 🔥 SAME AS MANTRA STYLE
+                  className="bg-white rounded-xl shadow-md flex flex-col w-full max-w-65 overflow-hidden hover:shadow-lg transition"
                 >
 
                   {/* 🔥 IMAGE FIXED (CENTER TOP) */}
@@ -219,9 +221,9 @@ export default function StoriesPage() {
           {/* PAGINATION */}
           <div className="mt-8 flex justify-center">
             <AppPagination
-              currentPage={currentPage} // current page
-              totalPages={totalPages}   // total pages
-              onPageChange={setCurrentPage} // change page
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
             />
           </div>
         </>
