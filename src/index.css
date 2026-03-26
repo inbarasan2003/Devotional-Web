@@ -128,3 +128,15 @@
     @apply font-mono;
     }
 }
+
+
+
+@keyframes wave {
+  0% { height: 5px; }
+  50% { height: 25px; }
+  100% { height: 5px; }
+}
+
+.animate-wave {
+  animation: wave 1s infinite ease-in-out;
+}

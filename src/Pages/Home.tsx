@@ -50,7 +50,7 @@ export default function Home() {
         <div className="bg-white p-5 rounded-xl shadow text-center">
           <h2 className="text-orange-600 font-semibold">📖 Stories</h2>
           <p className="text-xs text-gray-500 mt-2">
-            Read inspiring spiritual stories from scriptures
+            inspiring spiritual stories from scriptures
           </p>
         </div>
 
@@ -94,11 +94,11 @@ export default function Home() {
       {/* 🔥 FOOTER */}
       <footer className="bg-white border-t mt-auto py-6 px-4">
 
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-600">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-center items-center gap-4 text-sm text-gray-600">
 
           <p>© 2026 Devotional App. All rights reserved.</p>
 
-          <div className="flex gap-4">
+          {/* <div className="flex gap-4">
             <button onClick={() => navigate("/mantra")} className="hover:text-orange-600">
               Mantra
             </button>
@@ -108,7 +108,7 @@ export default function Home() {
             <button onClick={() => navigate("/profile")} className="hover:text-orange-600">
               Profile
             </button>
-          </div>
+          </div> */}
 
         </div>
 
