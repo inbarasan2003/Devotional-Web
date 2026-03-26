@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import GallerySlider from "./Gallery-Slider";
 
 export default function Home() {
 
@@ -71,35 +72,7 @@ export default function Home() {
       </section>
 
       {/* 🔥 GALLERY */}
-      <section className="px-4 pb-10 max-w-6xl mx-auto">
-
-        <h2 className="text-xl font-bold text-orange-400 mb-4 text-center">
-          Divine Gallery ✨
-        </h2>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-
-          {[
-            "https://i.pinimg.com/564x/f4/b4/b9/f4b4b95dd8e1b48588ba08f51a887c24.jpg",
-            "https://e1.pxfuel.com/desktop-wallpaper/869/945/desktop-wallpaper-hindu-god-hindu-god-thumbnail.jpg",
-            "https://i.pinimg.com/474x/a8/9f/67/a89f67592990ba7f6854fc54669f6255.jpg",
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSj-l7KcV1oBIr9KgVEQPgrzozkgKbrwkHbA&s",
-          ].map((img, i) => (
-            <motion.div
-              key={i}
-              whileHover={{ scale: 1.08 }}
-              className="aspect-4/3 overflow-hidden rounded-xl shadow-lg"
-            >
-              <img
-                src={img}
-                className="w-full h-full object-cover"
-              />
-            </motion.div>
-          ))}
-
-        </div>
-
-      </section>
+      <GallerySlider/>
 
       {/* 🔥 FOOTER */}
       <footer className="bg-black/40 backdrop-blur text-center py-6 text-gray-400 text-sm">

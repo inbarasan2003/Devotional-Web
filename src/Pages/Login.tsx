@@ -91,55 +91,87 @@ export default function Login() {
     // 🔥 FULL PAGE BACKGROUND
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#0f172a] via-[#1e293b] to-black px-4 text-white relative overflow-hidden">
 
-      {/* 🔥 GLOW BACKGROUND (decorative UI effect) */}
+      {/* 🔥 GLOW BACKGROUND */}
       <div className="absolute w-72 h-72 bg-orange-500/20 blur-3xl rounded-full top-10 left-10"></div>
       <div className="absolute w-72 h-72 bg-yellow-500/10 blur-3xl rounded-full bottom-10 right-10"></div>
 
-      {/* 🔥 LOGIN CARD */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }} // animation start
-        animate={{ opacity: 1, scale: 1 }}   // animation end
-        className="bg-white/10 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl p-8 w-full max-w-sm text-center"
-      >
+      {/* 🔥 MAIN GRID */}
+      <div className="grid md:grid-cols-2 gap-10 items-center max-w-5xl w-full">
 
-        {/* 🔥 TITLE */}
-        <h1 className="text-3xl font-bold text-orange-400 mb-2">
-          Welcome 🙏
-        </h1>
+        {/* 🔥 LEFT SIDE (BRANDING) */}
+        <motion.div
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="hidden md:flex flex-col gap-4"
+        >
+          <h1 className="text-4xl font-bold text-orange-400 leading-tight">
+            Devotional <br /> Experience 🪔
+          </h1>
 
-        {/* 🔥 SUBTEXT */}
-        <p className="text-gray-300 mb-6 text-sm">
-          Continue your spiritual journey
-        </p>
+          <p className="text-gray-300 text-sm max-w-sm">
+            Explore powerful mantras, calming audio, and inspiring spiritual stories.
+            Stay connected with your inner peace anytime.
+          </p>
 
-        {/* 🔥 GOOGLE LOGIN BUTTON */}
-        <button
-          onClick={handleLogin} // trigger login
-          className="flex items-center justify-center gap-3 w-full bg-white text-black rounded-xl py-3 hover:scale-105 transition shadow-lg"
+          <div className="flex gap-3 mt-2">
+            <span className="text-xs bg-white/10 px-3 py-1 rounded-full">Mantras</span>
+            <span className="text-xs bg-white/10 px-3 py-1 rounded-full">Stories</span>
+            <span className="text-xs bg-white/10 px-3 py-1 rounded-full">Audio</span>
+          </div>
+        </motion.div>
+
+        {/* 🔥 LOGIN CARD */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-white/10 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl p-8 w-full text-center"
         >
 
-          {/* GOOGLE ICON */}
-          <img
-            src="https://www.svgrepo.com/show/475656/google-color.svg"
-            alt="google"
-            className="w-5 h-5"
-          />
+          {/* 🔥 TITLE */}
+          <h1 className="text-3xl font-bold text-orange-400 mb-2">
+            Welcome 
+          </h1>
 
-          {/* BUTTON TEXT */}
-          <span className="text-sm font-semibold">
-            Continue with Google
-          </span>
-
-        </button>
-
-        {/* 🔥 LOADING STATE (shown during login) */}
-        {mutation.isPending && (
-          <p className="text-xs text-gray-400 mt-4">
-            Signing you in...
+          {/* 🔥 SUBTEXT */}
+          <p className="text-gray-300 mb-6 text-sm">
+            Continue your spiritual journey
           </p>
-        )}
 
-      </motion.div>
+          {/* 🔥 GOOGLE LOGIN BUTTON */}
+          <button
+            onClick={handleLogin}
+            className="flex items-center justify-center gap-3 w-full bg-white text-black rounded-xl py-3 hover:scale-105 transition shadow-lg"
+          >
+
+            {/* GOOGLE ICON */}
+            <img
+              src="https://www.svgrepo.com/show/475656/google-color.svg"
+              alt="google"
+              className="w-5 h-5"
+            />
+
+            {/* BUTTON TEXT */}
+            <span className="text-sm font-semibold">
+              Continue with Google
+            </span>
+
+          </button>
+
+          {/* 🔥 LOADING STATE */}
+          {mutation.isPending && (
+            <p className="text-xs text-gray-400 mt-4">
+              Signing you in...
+            </p>
+          )}
+
+          {/* 🔥 FOOTER TEXT */}
+          <p className="text-xs text-gray-500 mt-6">
+            By continuing, you agree to our terms & privacy policy
+          </p>
+
+        </motion.div>
+
+      </div>
     </div>
   );
 }
