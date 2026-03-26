@@ -1,85 +1,101 @@
-import { useState } from "react"; // React state
-import { useQuery, useQueryClient } from "@tanstack/react-query"; // API + cache
-import { getMantras, deleteMantra } from "../../services/Mantra-api"; // API functions
-import AppPagination from "../../components/Pagination"; // pagination component
-import toast from "react-hot-toast"; // toast notification
-import { Commet } from "react-loading-indicators"; // loading spinner
-import { useAudio } from "../../context/AudioProvider"; // 🔥 global audio
+// React state
+import { useState } from "react";
+
+// React Query (API + cache)
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+// API functions
+import { getMantras, deleteMantra } from "../../services/Mantra-api";
+
+// Pagination component
+import AppPagination from "../../components/Pagination";
+
+// Toast notifications
+import toast from "react-hot-toast";
+
+// Loading spinner
+import { Commet } from "react-loading-indicators";
+
+// Global audio system
+import { useAudio } from "../../context/AudioProvider";
+
+// Animation
+import { motion } from "framer-motion";
 
 export default function MantraPage() {
 
-  // search input state
+  // Search input state
   const [search, setSearch] = useState("");
 
-  // current page number
+  // Current page (pagination)
   const [currentPage, setCurrentPage] = useState(1);
 
-  // selected item for delete
+  // Selected mantra for delete
   const [deleteItem, setDeleteItem] = useState<any>(null);
 
-  // modal open state
+  // Modal open/close
   const [open, setOpen] = useState(false);
 
-  // react query cache
+  // React Query cache
   const queryClient = useQueryClient();
 
-  // 🔥 audio global control
+  // Global audio controls
   const { setAudio, setTitle, setImage, audio } = useAudio();
 
-  // items per page
+  // Items per page
   const itemsPerPage = 5;
 
-  // fetch data from API
+  // Fetch mantras from API
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["mantras"], // cache key
     queryFn: getMantras,   // API call
   });
 
-  // filter data based on search
+  // Filter based on search
   const filteredMantras = (data ?? []).filter((item: any) =>
     item.title?.toLowerCase().includes(search.toLowerCase()),
   );
 
-  // total pages calculation
+  // Total pages calculation
   const totalPages = Math.max(
     1,
     Math.ceil(filteredMantras.length / itemsPerPage),
   );
 
-  // starting index
+  // Start index for pagination
   const startIndex = (currentPage - 1) * itemsPerPage;
 
-  // slice data for current page
+  // Slice data for current page
   const paginatedData = filteredMantras.slice(
     startIndex,
     startIndex + itemsPerPage,
   );
 
-  // delete confirm function
+  // Delete confirm function
   const confirmDelete = async () => {
 
     if (!deleteItem) return; // safety check
 
     try {
-      // toast with promise
+      // Toast with loading + success + error
       await toast.promise(deleteMantra(deleteItem._id), {
         loading: "Deleting...",
         success: "Deleted Successfully ✅",
         error: "Delete Failed ❌",
       });
 
-      // refresh data
+      // Refresh data after delete
       await queryClient.invalidateQueries({ queryKey: ["mantras"] });
 
-      setOpen(false); // close modal
-      setDeleteItem(null); // reset item
+      setOpen(false);       // close modal
+      setDeleteItem(null);  // reset item
 
     } catch (err) {
-      console.error(err); // error log
+      console.error(err);
     }
   };
 
-  // error UI
+  // Error UI
   if (isError) {
     return (
       <div className="text-red-500 text-center mt-10">
@@ -89,174 +105,177 @@ export default function MantraPage() {
   }
 
   return (
-    <div className="min-h-screen bg-orange-50 p-4 md:p-6 mt-15 pb-28">
 
-      {/* HEADER */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-5">
+    // Main container
+    <div className="min-h-screen bg-linear-to-br from-[#0f172a] via-[#1e293b] to-black text-white p-4 md:p-6 mt-15 pb-28">
 
-        {/* page title */}
-        <h1 className="text-xl md:text-2xl font-bold text-orange-600">
+      {/* 🔥 HEADER */}
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+
+        {/* Page title */}
+        <h1 className="text-2xl font-bold text-orange-400">
           🪔 Devotional Mantras
         </h1>
 
-        {/* search input */}
+        {/* Search input */}
         <input
           type="text"
           placeholder="Search mantra..."
           value={search}
           onChange={(e) => {
             setSearch(e.target.value); // update search
-            setCurrentPage(1); // reset page
+            setCurrentPage(1);         // reset page
           }}
-          className="w-full md:w-64 px-3 py-2 rounded-full border bg-white text-sm"
+          className="w-full md:w-64 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-sm"
         />
       </div>
 
-      {/* LOADING */}
+      {/* 🔥 LOADING */}
       {isLoading ? (
         <div className="flex justify-center mt-10">
-          <Commet color="#cc3f31" size="medium" text="Loading" textColor="#bf3f00" />
+          <Commet color="#f97316" size="medium" text="Loading" textColor="#fb923c" />
         </div>
       ) : (
         <>
-          {/* GRID */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 justify-items-center items-stretch">
+          {/* 🔥 GRID */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
-            {/* loop each mantra */}
-            {paginatedData.map((item: any) => {
+            {paginatedData.map((item: any, index: number) => {
 
-              // convert tags string → array
+              // Convert tags string → array
               const tagsArray = Array.isArray(item.tags)
                 ? item.tags
                 : item.tags?.split(",") || [];
 
               return (
-                <div
+                <motion.div
                   key={item._id} // unique key
-
-                  // 🔥 FIXED: responsive width (no overflow)
-                  className="bg-white rounded-xl shadow-md flex flex-col w-full max-w-65 overflow-hidden hover:shadow-lg transition"
+                  initial={{ opacity: 0, y: 40 }} // animation start
+                  animate={{ opacity: 1, y: 0 }}  // animation end
+                  transition={{ delay: index * 0.05 }} // stagger
+                  whileHover={{ scale: 1.04 }} // hover effect
+                  className="bg-white/10 backdrop-blur-lg border border-white/10 rounded-2xl shadow-lg overflow-hidden flex flex-col"
                 >
 
-                  {/* IMAGE */}
+                  {/* 🔥 IMAGE */}
                   {item.photos?.length > 0 && (
-                    <div className="w-full aspect-2/3 overflow-hidden">
+                    <div className="relative w-full aspect-2/3 overflow-hidden">
                       <img
-                        src={item.photos[0]} // first image
+                        src={item.photos[0]}
                         alt="mantra"
-                        className="w-full h-full object-cover object-[center_top]"
+                        className="w-full h-full object-cover"
                       />
+                      {/* overlay gradient */}
+                      <div className="absolute inset-0 bg-linear-to-t from-black/70 to-transparent" />
                     </div>
                   )}
 
-                  {/* CONTENT */}
+                  {/* 🔥 CONTENT */}
                   <div className="p-3 flex flex-col flex-1">
 
-                    {/* title */}
-                    <h2 className="text-sm font-semibold text-orange-600">
+                    {/* Title */}
+                    <h2 className="text-sm font-semibold text-orange-400">
                       {item.title}
                     </h2>
 
-                    {/* description */}
-                    <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                    {/* Description */}
+                    <p className="text-xs text-gray-300 mt-1 line-clamp-2">
                       {item.description}
                     </p>
 
                     {/* TAGS */}
                     <div className="flex flex-wrap gap-1 mt-2">
-
-                      {/* loop tags */}
                       {tagsArray.map((tag: string, i: number) => (
                         <span
                           key={i}
-                          className="text-[10px] bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full"
+                          className="text-[10px] bg-orange-500/20 text-orange-300 px-2 py-0.5 rounded-full"
                         >
                           #{tag.trim()}
                         </span>
                       ))}
-
                     </div>
 
-                    {/* 🔥 PLAY BUTTON (GLOBAL AUDIO) */}
+                    {/* 🔥 PLAY BUTTON */}
                     {item.audio && (
                       <button
                         onClick={() => {
-
                           setAudio(item.audio); // set audio
                           setTitle(item.title); // set title
-
-                          // 🔥 set image
-                          setImage(item.photos?.[0] || item.titlePhoto);
-
+                          setImage(item.photos?.[0] || item.titlePhoto); // set image
                         }}
-                        className="mt-2 w-full bg-orange-500 hover:bg-orange-600 text-white text-xs py-1 rounded"
+                        className="mt-3 w-full bg-linear-to-r from-orange-500 to-yellow-500 text-white text-xs py-1.5 rounded-full"
                       >
                         ▶ Play
                       </button>
                     )}
 
-                    {/* 🔥 SHOW PLAYING STATUS */}
+                    {/* 🔥 PLAYING STATUS */}
                     {audio === item.audio && (
-                      <span className="text-green-500 text-xs mt-1">
+                      <span className="text-green-400 text-xs mt-1">
                         Playing...
                       </span>
                     )}
 
-                    {/* DELETE */}
+                    {/* 🔥 DELETE */}
                     <div className="flex justify-end mt-auto pt-2">
                       <button
                         onClick={() => {
-                          setDeleteItem(item); // set item
+                          setDeleteItem(item); // select item
                           setOpen(true);       // open modal
                         }}
-                        className="text-[10px] bg-red-500 text-white px-2 py-1 rounded"
+                        className="text-[10px] bg-red-500 text-white px-2 py-1 rounded-full"
                       >
                         Delete
                       </button>
                     </div>
 
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
 
-          {/* PAGINATION */}
-          <div className="mt-8 flex justify-center">
+          {/* 🔥 PAGINATION */}
+          <div className="mt-10 flex justify-center">
             <AppPagination
-              currentPage={currentPage} // current page
-              totalPages={totalPages}   // total pages
-              onPageChange={setCurrentPage} // change page
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
             />
           </div>
         </>
       )}
 
-      {/* DELETE MODAL */}
+      {/* 🔥 DELETE MODAL */}
       {open && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center">
 
-          <div className="bg-white p-5 rounded-xl text-center w-75 shadow-lg">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white/10 backdrop-blur-lg border border-white/10 p-6 rounded-xl text-center w-80 shadow-xl"
+          >
 
-            <h2 className="text-lg font-semibold text-red-500">
+            {/* Title */}
+            <h2 className="text-lg font-semibold text-red-400">
               Delete Mantra
             </h2>
 
-            <p className="text-sm mt-2">
+            {/* Message */}
+            <p className="text-sm mt-2 text-gray-300">
               Delete <b>{deleteItem?.title}</b> ?
             </p>
 
+            {/* Buttons */}
             <div className="flex justify-center gap-3 mt-4">
 
-              {/* cancel */}
               <button
                 onClick={() => setOpen(false)}
-                className="px-3 py-1 bg-gray-200 rounded"
+                className="px-3 py-1 bg-white/10 rounded"
               >
                 Cancel
               </button>
 
-              {/* confirm delete */}
               <button
                 onClick={confirmDelete}
                 className="px-3 py-1 bg-red-500 text-white rounded"
@@ -266,9 +285,10 @@ export default function MantraPage() {
 
             </div>
 
-          </div>
+          </motion.div>
         </div>
       )}
+
     </div>
   );
 }

@@ -4,6 +4,9 @@
 @import "@fontsource-variable/jetbrains-mono";
 
 @custom-variant dark (&:is(.dark *));
+body {
+  background: radial-gradient(circle at top, #1e293b, #020617);
+}
 
 @theme inline {
     --font-heading: var(--font-mono);
