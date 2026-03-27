@@ -1,8 +1,14 @@
 import { axiosInstance } from "./auth-Instance";
 
-// GET
+// GET ALL
 export const getMantras = async () => {
   const res = await axiosInstance.get("/mantras/");
+  return res.data.data;
+};
+
+// GET SINGLE
+export const getSingleMantra = async (id: string) => {
+  const res = await axiosInstance.get(`/mantras/${id}`);
   return res.data.data;
 };
 
@@ -12,7 +18,13 @@ export const createMantra = async (data: any) => {
   return res.data.data;
 };
 
-// 🔥 DELETE
+// UPDATE
+export const updateMantra = async (data: any) => {
+  const res = await axiosInstance.put(`/mantras/${data.id}`, data);
+  return res.data.data;
+};
+
+// DELETE
 export const deleteMantra = async (id: string) => {
   const res = await axiosInstance.delete(`/mantras/${id}`);
   return res.data.data;

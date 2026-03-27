@@ -21,7 +21,12 @@ class AuthService {
       googleToken: token,
     });
 
-    return data.data;
+    const result = data.data;
+
+    localStorage.setItem("authToken", result.accessToken);
+    localStorage.setItem("user", JSON.stringify(result.user)); //  important
+
+    return result;
   }
 
   //Adds a logout listener and returns a cleanup function to remove it later
@@ -41,7 +46,6 @@ class AuthService {
 
     // call all listeners
     this.listeners.forEach((h) => h());
-
   }
 }
 //Creates an instance of AuthService and exports it

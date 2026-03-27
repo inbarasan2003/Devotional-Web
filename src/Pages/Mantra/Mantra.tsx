@@ -21,11 +21,13 @@ import { useAudio } from "../../context/AudioProvider";
 
 // Animation
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function MantraPage() {
-
   // Search input state
   const [search, setSearch] = useState("");
+
+  const navigate =useNavigate()
 
   // Current page (pagination)
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,7 +50,7 @@ export default function MantraPage() {
   // Fetch mantras from API
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["mantras"], // cache key
-    queryFn: getMantras,   // API call
+    queryFn: getMantras, // API call
   });
 
   // Filter based on search
@@ -73,7 +75,6 @@ export default function MantraPage() {
 
   // Delete confirm function
   const confirmDelete = async () => {
-
     if (!deleteItem) return; // safety check
 
     try {
@@ -87,9 +88,8 @@ export default function MantraPage() {
       // Refresh data after delete
       await queryClient.invalidateQueries({ queryKey: ["mantras"] });
 
-      setOpen(false);       // close modal
-      setDeleteItem(null);  // reset item
-
+      setOpen(false); // close modal
+      setDeleteItem(null); // reset item
     } catch (err) {
       console.error(err);
     }
@@ -105,13 +105,10 @@ export default function MantraPage() {
   }
 
   return (
-
     // Main container
     <div className="min-h-screen bg-linear-to-br from-[#0f172a] via-[#1e293b] to-black text-white p-4 md:p-6 mt-15 pb-28">
-
       {/* 🔥 HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-
         {/* Page title */}
         <h1 className="text-2xl font-bold text-orange-400">
           🪔 Devotional Mantras
@@ -124,7 +121,7 @@ export default function MantraPage() {
           value={search}
           onChange={(e) => {
             setSearch(e.target.value); // update search
-            setCurrentPage(1);         // reset page
+            setCurrentPage(1); // reset page
           }}
           className="w-full md:w-64 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-sm"
         />
@@ -133,15 +130,18 @@ export default function MantraPage() {
       {/* 🔥 LOADING */}
       {isLoading ? (
         <div className="flex justify-center mt-10">
-          <Commet color="#f97316" size="medium" text="Loading" textColor="#fb923c" />
+          <Commet
+            color="#f97316"
+            size="medium"
+            text="Loading Mantras..."
+            textColor="#fb923c"
+          />
         </div>
       ) : (
         <>
           {/* 🔥 GRID */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
             {paginatedData.map((item: any, index: number) => {
-
               // Convert tags string → array
               const tagsArray = Array.isArray(item.tags)
                 ? item.tags
@@ -151,12 +151,11 @@ export default function MantraPage() {
                 <motion.div
                   key={item._id} // unique key
                   initial={{ opacity: 0, y: 40 }} // animation start
-                  animate={{ opacity: 1, y: 0 }}  // animation end
+                  animate={{ opacity: 1, y: 0 }} // animation end
                   transition={{ delay: index * 0.05 }} // stagger
                   whileHover={{ scale: 1.04 }} // hover effect
                   className="bg-white/10 backdrop-blur-lg border border-white/10 rounded-2xl shadow-lg overflow-hidden flex flex-col"
                 >
-
                   {/* 🔥 IMAGE */}
                   {item.photos?.length > 0 && (
                     <div className="relative w-full aspect-2/3 overflow-hidden">
@@ -172,7 +171,6 @@ export default function MantraPage() {
 
                   {/* 🔥 CONTENT */}
                   <div className="p-3 flex flex-col flex-1">
-
                     {/* Title */}
                     <h2 className="text-sm font-semibold text-orange-400">
                       {item.title}
@@ -203,7 +201,7 @@ export default function MantraPage() {
                           setTitle(item.title); // set title
                           setImage(item.photos?.[0] || item.titlePhoto); // set image
                         }}
-                        className="mt-3 w-full bg-linear-to-r from-orange-500 to-yellow-500 text-white text-xs py-1.5 rounded-full"
+                        className="mt-3 w-full bg-linear-to-r from-orange-500 to-yellow-500 text-white text-xs py-1.5 rounded-full cursor-pointer"
                       >
                         ▶ Play
                       </button>
@@ -216,19 +214,27 @@ export default function MantraPage() {
                       </span>
                     )}
 
-                    {/* 🔥 DELETE */}
-                    <div className="flex justify-end mt-auto pt-2">
+                    {/* 🔥 ACTIONS */}
+                    <div className="flex justify-between mt-auto pt-2 gap-2">
+                      {/* ✏️ UPDATE BUTTON */}
+                      <button
+                        onClick={() => navigate(`/edit-mantra/${item._id}`)}
+                        className="text-[10px] bg-blue-500 text-white px-2 py-1 rounded-full hover:scale-105 transition cursor-pointer"
+                      >
+                        Edit
+                      </button>
+
+                      {/* 🗑 DELETE BUTTON */}
                       <button
                         onClick={() => {
-                          setDeleteItem(item); // select item
-                          setOpen(true);       // open modal
+                          setDeleteItem(item);
+                          setOpen(true);
                         }}
-                        className="text-[10px] bg-red-500 text-white px-2 py-1 rounded-full"
+                        className="text-[10px] bg-red-500 text-white px-2 py-1 rounded-full hover:scale-105 transition cursor-pointer"
                       >
                         Delete
                       </button>
                     </div>
-
                   </div>
                 </motion.div>
               );
@@ -249,13 +255,11 @@ export default function MantraPage() {
       {/* 🔥 DELETE MODAL */}
       {open && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center">
-
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="bg-white/10 backdrop-blur-lg border border-white/10 p-6 rounded-xl text-center w-80 shadow-xl"
           >
-
             {/* Title */}
             <h2 className="text-lg font-semibold text-red-400">
               Delete Mantra
@@ -268,7 +272,6 @@ export default function MantraPage() {
 
             {/* Buttons */}
             <div className="flex justify-center gap-3 mt-4">
-
               <button
                 onClick={() => setOpen(false)}
                 className="px-3 py-1 bg-white/10 rounded"
@@ -282,13 +285,10 @@ export default function MantraPage() {
               >
                 Delete
               </button>
-
             </div>
-
           </motion.div>
         </div>
       )}
-
     </div>
   );
 }

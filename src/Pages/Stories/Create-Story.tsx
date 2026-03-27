@@ -1,30 +1,33 @@
-// Import API function to create story
-import { CreateStories } from "../../services/Story-api";
+// API
+import {
+  CreateStories,
+  getSIngleStory,
+  UpdateStories,
+} from "../../services/Story-api";
 
-// React Query cache (used to refresh data after create)
-import { useQueryClient } from "@tanstack/react-query";
+// React Query
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-// React state hook
-import { useState } from "react";
+// React
+import { useEffect, useState } from "react";
 
-// Toast notification
+// Toast
 import toast from "react-hot-toast";
 
-// Navigation
-import { useNavigate } from "react-router-dom";
+// Router
+import { useNavigate, useParams } from "react-router-dom";
 
-// Animation library
+// Animation
 import { motion } from "framer-motion";
 
 export default function CreateStory() {
+  const { id } = useParams();
+  const isEdit = !!id;
 
-  // Used to navigate between pages
   const navigate = useNavigate();
-
-  // Used to refresh API cache
   const queryClient = useQueryClient();
 
-  // Form state (stores all input values)
+  // FORM STATE
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -35,73 +38,146 @@ export default function CreateStory() {
     audio: "",
   });
 
-  // Handle input change (updates form state)
+  // FETCH SINGLE STORY
+  const { data } = useQuery({
+    queryKey: ["story", id],
+    queryFn: () => getSIngleStory(id!),
+    enabled: isEdit,
+  });
+
+  // PREFILL FORM
+  useEffect(() => {
+    if (isEdit && data) {
+      console.log("EDIT DATA:", data); // 🔥 debug
+
+      setForm({
+        title: data.title || "",
+        description: data.description || "",
+        category: data.category || "",
+        titlePhoto: data.titlePhoto || "",
+        tags: Array.isArray(data.tags) ? data.tags.join(",") : data.tags || "",
+        photos: data.photos || [],
+        audio: data.audio || "",
+      });
+    }
+  }, [data, isEdit]);
+
+  // HANDLE INPUT
   const handleChange = (e: any) => {
     setForm({
-      ...form, // keep old values
-      [e.target.name]: e.target.value, // update changed field
+      ...form,
+      [e.target.name]: e.target.value,
     });
   };
 
-  // Submit form
+  // SUBMIT
   const handleSubmit = async () => {
+    console.log("EDIT MODE:", isEdit);
+    console.log("ID:", id);
+    console.log("FORM:", form);
 
-    // Validation check (required fields)
-    if (!form.title || !form.description || !form.category || !form.titlePhoto) {
+    if (
+      !form.title ||
+      !form.description ||
+      !form.category ||
+      !form.titlePhoto
+    ) {
       toast.error("Fill all required fields ❌");
       return;
     }
 
-    // Prepare API payload
-    const payload = {
-      title: form.title,
-      description: form.description,
-      category: form.category,
-      titlePhoto: form.titlePhoto,
-      tags: form.tags.trim(), // remove extra space
-      photos: form.photos,
-      audio: form.audio.trim(),
-    };
-
     try {
+      // 🔥 CREATE
+      if (!isEdit) {
+        const payload = {
+          title: form.title,
+          description: form.description,
+          category: form.category,
+          titlePhoto: form.titlePhoto,
+          tags: form.tags.trim(),
+          photos: form.photos,
+          audio: form.audio.trim(),
+        };
 
-      // Show loading + success + error using toast
-      await toast.promise(
-        CreateStories(payload),
-        {
-          loading: "Creating Story...",
-          success: "Story Created ✅",
-          error: "Failed ❌",
-        }
-      );
+        console.log("CREATE PAYLOAD:", payload);
 
-      // Refresh stories list
+        await toast.promise(
+          CreateStories(payload),
+          {
+            loading: "Creating Story...",
+            success: "Story Created ✅",
+            error: "Failed ❌",
+          },
+          {
+            style: {
+              background: "rgba(15,23,42,0.85)", // dark theme match
+              color: "#fff",
+              backdropFilter: "blur(12px)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "14px",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.4)",
+            },
+          },
+        );
+      } else {
+        // 🔥 UPDATE (SAFE VERSION)
+        const payload = {
+          id, // important
+          title: form.title,
+          description: form.description,
+          category: form.category,
+          titlePhoto: form.titlePhoto,
+          tags: form.tags.trim(),
+          photos: form.photos,
+          audio: form.audio.trim(),
+        };
+
+        console.log("UPDATE PAYLOAD:", payload);
+
+        await toast.promise(
+          UpdateStories(payload),
+          {
+            loading: "Updating Story...",
+            success: "Story Updated ✅",
+            error: "Failed ❌",
+          },
+          {
+            style: {
+              background: "rgba(15,23,42,0.85)", // dark theme match
+              color: "#fff",
+              backdropFilter: "blur(12px)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "14px",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.4)",
+            },
+          },
+        );
+      }
+
+      // REFRESH
       await queryClient.invalidateQueries({ queryKey: ["stories"] });
 
-      // Navigate back to stories page
+      // NAVIGATE
       navigate("/stories");
-
     } catch (error: any) {
-      console.error(error); // log error
+      // 🔥 FULL DEBUG
+      console.log("ERROR:", error);
+      console.log("RESPONSE:", error?.response);
+      console.log("DATA:", error?.response?.data);
+
+      toast.error(error?.response?.data?.message || "Something went wrong ❌");
     }
   };
 
   return (
-
-    // Full page container with dark gradient background
     <div className="min-h-screen bg-linear-to-br from-[#0f172a] via-[#1e293b] to-black flex items-center justify-center px-4 text-white">
-
-      {/* Animated form container */}
       <motion.div
-        initial={{ opacity: 0, y: 40 }} // start animation
-        animate={{ opacity: 1, y: 0 }}  // end animation
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md bg-white/10 backdrop-blur-lg border border-white/10 rounded-2xl shadow-xl p-6"
       >
-
-        {/* HEADER SECTION */}
+        {/* HEADER */}
         <div className="flex items-center justify-between mb-5">
-
-          {/* Back button */}
           <button
             onClick={() => navigate("/stories")}
             className="text-sm text-orange-400 hover:underline"
@@ -109,97 +185,93 @@ export default function CreateStory() {
             ← Back
           </button>
 
-          {/* Page title */}
           <h1 className="text-lg font-bold text-orange-400">
-            Add Story 🪔
+            {isEdit ? "Edit Story 🪔" : "Add Story 🪔"}
           </h1>
 
-          {/* Empty div for spacing */}
           <div />
         </div>
 
-        {/* FORM SECTION */}
+        {/* FORM */}
         <div className="space-y-4">
-
-          {/* Title input */}
           <input
             name="title"
+            value={form.title}
             placeholder="Story Title"
             onChange={handleChange}
             className="w-full bg-white/10 border border-white/20 p-2 rounded-md text-sm"
           />
 
-          {/* Description textarea */}
           <textarea
             name="description"
+            value={form.description}
             placeholder="Story Description"
             rows={3}
             onChange={handleChange}
             className="w-full bg-white/10 border border-white/20 p-2 rounded-md text-sm"
           />
 
-          {/* Category input */}
           <input
             name="category"
+            value={form.category}
             placeholder="Category"
             onChange={handleChange}
             className="w-full bg-white/10 border border-white/20 p-2 rounded-md text-sm"
           />
 
-          {/* Title image URL */}
           <input
             name="titlePhoto"
+            value={form.titlePhoto}
             placeholder="Title Image URL"
             onChange={handleChange}
             className="w-full bg-white/10 border border-white/20 p-2 rounded-md text-sm"
           />
 
-          {/* Tags (max 3) */}
+          {/* TAGS */}
           <input
             name="tags"
-            placeholder="Max 3 tags (comma separated)"
+            value={form.tags}
+            placeholder="Max 3 tags"
             className="w-full bg-white/10 border border-white/20 p-2 rounded-md text-sm"
             onChange={(e) => {
               const value = e.target.value;
               const tags = value.split(",");
 
-              // Allow only 3 tags
               if (tags.length <= 3) {
                 setForm({ ...form, tags: value });
               }
             }}
           />
 
-          {/* Multiple image URLs */}
+          {/* PHOTOS */}
           <input
-            placeholder="Image URLs (comma separated)"
+            placeholder="Image URLs"
             className="w-full bg-white/10 border border-white/20 p-2 rounded-md text-sm"
             onChange={(e) =>
               setForm({
                 ...form,
-                photos: e.target.value.split(","), // convert to array
+                photos: e.target.value.split(","),
               })
             }
           />
 
-          {/* Audio URL */}
+          {/* AUDIO */}
           <input
             name="audio"
+            value={form.audio}
             placeholder="Audio URL"
             onChange={handleChange}
             className="w-full bg-white/10 border border-white/20 p-2 rounded-md text-sm"
           />
-
         </div>
 
-        {/* SUBMIT BUTTON */}
+        {/* SUBMIT */}
         <button
           onClick={handleSubmit}
           className="mt-6 w-full bg-linear-to-r from-orange-500 to-yellow-500 text-white py-2 rounded-full shadow-lg hover:scale-105 transition"
         >
-          Create Story
+          {isEdit ? "Update Story" : "Create Story"}
         </button>
-
       </motion.div>
     </div>
   );

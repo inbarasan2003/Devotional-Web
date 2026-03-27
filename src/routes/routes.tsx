@@ -10,7 +10,7 @@ import CreateMantra from "../Pages/Mantra/Create-Mantra";
 import CreateStory from "../Pages/Stories/Create-Story";
 import Home from "../Pages/Home";
 
-const routes = [
+const routes = [ 
   {
     element: <RootLayout />,
     children: [
@@ -18,19 +18,20 @@ const routes = [
         path: "/",
         element: <Navigate to="/login" />,
       },
+
       {
         path: "/login",
         element: <Login />,
       },
-      
+
       {
         element: <ProtectedLayout />,
         children: [
-           {
-              path:'/home',
-              element:<Home/>
+          {
+            path: "/home",
+            element: <Home />,
           },
-         
+
           {
             path: "/mantra",
             element: <Mantra />,
@@ -39,19 +40,31 @@ const routes = [
             path: "/create-mantra",
             element: <CreateMantra />,
           },
+          {
+            path: "/edit-mantra/:id", // 🔥 ADD THIS
+            element: <CreateMantra />, // same page reuse
+          },
 
           {
-            path:'/create-Story',
-            element:<CreateStory/>
+            path: "/create-Story",
+            element: <CreateStory />,
           },
+
+          {
+            path: "/edit-stories/:id",
+            element: <CreateStory />,
+          },
+
           {
             path: "/stories",
             element: <Stories />,
           },
+
           {
             path: "/profile",
             element: <Profile />,
           },
+
         ],
       },
     ],

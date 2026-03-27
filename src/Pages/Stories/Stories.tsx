@@ -21,11 +21,14 @@ import { useAudio } from "../../context/AudioProvider";
 
 // Animation
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function StoriesPage() {
 
   // Search input state
   const [search, setSearch] = useState("");
+
+  const navigate = useNavigate();
 
   // Current page for pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -127,7 +130,7 @@ export default function StoriesPage() {
       {/* 🔥 LOADING */}
       {isLoading ? (
         <div className="flex justify-center mt-10">
-          <Commet color="#f97316" size="medium" text="Loading" textColor="#fb923c" />
+          <Commet color="#f97316" size="medium" text="Loading Stories..." textColor="#fb923c" />
         </div>
       ) : (
         <>
@@ -200,7 +203,7 @@ export default function StoriesPage() {
                           setTitle(item.title); // set title
                           setImage(item.photos?.[0] || item.titlePhoto); // set image
                         }}
-                        className="mt-3 w-full bg-linear-to-r from-orange-500 to-yellow-500 text-white text-xs py-1.5 rounded-full"
+                        className="mt-3 w-full bg-linear-to-r from-orange-500 to-yellow-500 text-white text-xs py-1.5 rounded-full cursor-pointer"
                       >
                         ▶ Play
                       </button>
@@ -213,14 +216,23 @@ export default function StoriesPage() {
                       </span>
                     )}
 
-                    {/* 🔥 DELETE */}
-                    <div className="flex justify-end mt-auto pt-2">
+                      {/* 🔥 ACTIONS */}
+                    <div className="flex justify-between mt-auto pt-2 gap-2">
+                      {/* ✏️ UPDATE BUTTON */}
+                      <button
+                        onClick={() => navigate(`/edit-stories/${item._id}`)}
+                        className="text-[10px] bg-blue-500 text-white px-2 py-1 rounded-full hover:scale-105 transition cursor-pointer"
+                      >
+                        Edit
+                      </button>
+
+                      {/* 🗑 DELETE BUTTON */}
                       <button
                         onClick={() => {
-                          setDeleteItem(item); // set item
-                          setOpen(true);       // open modal
+                          setDeleteItem(item);
+                          setOpen(true);
                         }}
-                        className="text-[10px] bg-red-500 text-white px-2 py-1 rounded-full"
+                        className="text-[10px] bg-red-500 text-white px-2 py-1 rounded-full hover:scale-105 transition cursor-pointer"
                       >
                         Delete
                       </button>

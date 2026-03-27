@@ -4,7 +4,6 @@ import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Header() {
-
   const [open, setOpen] = useState(false); // profile dropdown
   const [menuOpen, setMenuOpen] = useState(false); // mobile menu
   const navigate = useNavigate();
@@ -14,10 +13,7 @@ export default function Header() {
   // close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event: any) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setOpen(false);
       }
     };
@@ -31,50 +27,56 @@ export default function Header() {
 
   // logout confirm
   const handleLogoutConfirm = () => {
-  toast((t) => (
-    <div className="flex flex-col gap-4 bg-blue-400 backdrop-blur-xl border border-white/10 rounded-xl p-4 shadow-xl w-65">
+    toast((t) => (
+      <div className="flex flex-col gap-4 bg-white/10 backdrop-blur-lg border border-white/10 rounded-2xl p-5 shadow-2xl w-72">
+        {/* MESSAGE */}
+        <p className="text-sm font-medium text-white text-center">
+          Are you sure you want to logout?
+        </p>
 
-      {/* MESSAGE */}
-      <p className="text-sm font-medium text-white text-center">
-        Are you sure you want to logout?
-      </p>
+        {/* BUTTONS */}
+        <div className="flex justify-center gap-3 mt-1">
+          {/* CANCEL */}
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="flex-1 px-3 py-1.5 border border-white/20 rounded-full text-xs text-gray-300 hover:bg-white/10 hover:text-white transition"
+          >
+            Cancel
+          </button>
 
-      {/* BUTTONS */}
-      <div className="flex justify-center gap-3 mt-1">
-
-        {/* CANCEL */}
-        <button
-          onClick={() => toast.dismiss(t.id)}
-          className="flex-1 px-3 py-1.5 border border-white/20 rounded-md text-xs text-gray-300 hover:bg-white/10 hover:text-white transition"
-        >
-          Cancel
-        </button>
-
-        {/* LOGOUT */}
-        <button
-          onClick={() => {
-            toast.dismiss(t.id);
-            toast.success("Logout successfully");
-
-            setTimeout(() => {
-              localStorage.clear();
-              navigate("/login");
-              window.location.reload();
-            }, 1200);
-          }}
-          className="flex-1 px-3 py-1.5 bg-linear-to-r from-red-500! to-orange-500 text-white rounded-md text-xs shadow-md hover:scale-105 hover:shadow-lg transition"
-        >
-          Yes, Logout
-        </button>
-
+          {/* LOGOUT */}
+          <button
+            onClick={() => {
+              toast.dismiss(t.id);
+              localStorage.removeItem("authToken");
+              localStorage.removeItem("user");
+              localStorage.removeItem("userId");
+              toast.success("Logout Successfully", {
+                style: {
+                  background: "rgba(15,23,42,0.85)",
+                  color: "#fff",
+                  backdropFilter: "blur(12px)",
+                  border: "1px solid rgba(34,197,94,0.3)", // green border
+                  borderRadius: "14px",
+                  boxShadow: "0 0 20px rgba(34,197,94,0.3)", // glow
+                },
+              });      
+              setTimeout(() => {
+                localStorage.clear();
+                navigate("/login");
+                window.location.reload();
+              }, 200);
+            }}
+            className="flex-1 px-3 py-1.5 bg-linear-to-r from-orange-500 to-yellow-500 text-white rounded-full text-xs shadow-lg hover:scale-105 transition"
+          >
+            Yes, Logout
+          </button>
+        </div>
       </div>
-    </div>
-  ));
-};
-
+    ));
+  };
   return (
     <header className="bg-white/10 backdrop-blur-lg border-b border-white/10 shadow-lg px-4 md:px-6 py-4 flex justify-between items-center fixed top-0 left-0 w-full z-50 text-white">
-
       {/* 🔥 LOGO */}
       <h2
         onClick={() => navigate("/home")}
@@ -85,7 +87,6 @@ export default function Header() {
 
       {/* 🔥 DESKTOP NAV */}
       <nav className="hidden md:flex gap-6 items-center">
-
         {[
           { name: "Home", path: "/home" },
           { name: "Mantra", path: "/mantra" },
@@ -108,7 +109,6 @@ export default function Header() {
 
         {/* 🔥 PROFILE */}
         <div ref={dropdownRef} className="relative">
-
           <button
             onClick={() => setOpen((prev) => !prev)}
             className="hover:text-orange-400 transition"
@@ -124,7 +124,6 @@ export default function Header() {
                 exit={{ opacity: 0, y: -10 }}
                 className="absolute right-0 mt-3 w-44 bg-white/10 backdrop-blur-lg border border-white/10 rounded-xl shadow-lg py-2"
               >
-
                 <NavLink
                   to="/profile"
                   onClick={() => setOpen(false)}
@@ -139,11 +138,9 @@ export default function Header() {
                 >
                   Logout
                 </button>
-
               </motion.div>
             )}
           </AnimatePresence>
-
         </div>
       </nav>
 
@@ -164,7 +161,6 @@ export default function Header() {
             exit={{ opacity: 0, y: -20 }}
             className="absolute top-16 left-0 w-full bg-black/80 backdrop-blur-lg flex flex-col items-center gap-4 py-6 md:hidden z-50"
           >
-
             {[
               { name: "Home", path: "/home" },
               { name: "Mantra", path: "/mantra" },
@@ -192,11 +188,9 @@ export default function Header() {
             >
               Logout
             </button>
-
           </motion.div>
         )}
       </AnimatePresence>
-
     </header>
   );
 }

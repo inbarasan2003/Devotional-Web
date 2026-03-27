@@ -6,7 +6,18 @@ import { AudioProvider } from "./context/AudioProvider"; // 🔥 import
 export default function App() {
   return (
     <>
-      <Toaster position="top-right" />
+      <Toaster
+  toastOptions={{
+    style: {
+      background: "transparent",
+      boxShadow: "none",
+      padding: 0,
+      border: "none",
+     
+
+    },
+  }}
+/>
 
       <AudioProvider>
         <RouterProvider router={router} />
