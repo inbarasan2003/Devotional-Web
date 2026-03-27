@@ -64,7 +64,6 @@ export default function Header() {
               setTimeout(() => {
                 localStorage.clear();
                 navigate("/login");
-                window.location.reload();
               }, 200);
             }}
             className="flex-1 px-3 py-1.5 bg-linear-to-r from-orange-500 to-yellow-500 text-white rounded-full text-xs shadow-lg hover:scale-105 transition"
