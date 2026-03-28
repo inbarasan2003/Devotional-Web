@@ -60,7 +60,7 @@ export default function Header() {
                   borderRadius: "14px",
                   boxShadow: "0 0 20px rgba(34,197,94,0.3)", // glow
                 },
-              });      
+              });
               setTimeout(() => {
                 localStorage.clear();
                 navigate("/login");
