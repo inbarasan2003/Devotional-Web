@@ -22,7 +22,7 @@ export const AudioProvider = ({ children }: any) => {
 
   // full player open or not
   const [isExpanded, setIsExpanded] = useState(false);
-
+ 
   // 🔥 playlist system
 
   // store full list of songs (mantra / story)
